@@ -219,6 +219,24 @@ export function learnAnswer(s: LearnState, correct: boolean): void {
   if (s.queue.length === 0 && allDone(s)) s.done = true;
 }
 
+/**
+ * «Ich hatte recht» nach einer als falsch gewerteten Abruf-Aufgabe: Der Fehler wird
+ * zurückgenommen (auch die Wiedervorlage) und der Versuch zählt als richtiger Abruf.
+ */
+export function learnOverride(s: LearnState, key: string): void {
+  const item = s.items[key];
+  if (!item || item.wrong === 0) return;
+  item.wrong--;
+  if (item.attempts === 1) item.firstResult = true;
+  const i = s.queue.indexOf(key);
+  if (i >= 0) s.queue.splice(i, 1);
+  const log = s.roundLog.findLast((e) => e.key === key);
+  if (log) log.correct = true;
+  item.got++;
+  item.stage = item.got >= item.needed ? 'done' : 'write';
+  if (s.queue.length === 0 && allDone(s)) s.done = true;
+}
+
 export function learnProgress(s: LearnState): { done: number; total: number; learning: number; fresh: number } {
   const items = Object.values(s.items);
   return {

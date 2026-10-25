@@ -287,6 +287,15 @@ async function deleteCardsInternal(cards: Card[]): Promise<void> {
   });
 }
 
+/** Rückgängig nach dem Löschen: Karten zurückholen und den Grabstein entfernen. */
+export async function restoreCards(cards: Card[]): Promise<void> {
+  const now = Date.now();
+  const restored = cards.map((c) => ({ ...c, updatedAt: now }));
+  await db.cards.bulkPut(restored);
+  await db.tombstones.bulkDelete(restored.map((c) => c.id));
+  await dirty('cards', restored.map((c) => c.id));
+}
+
 export async function deleteCards(ids: string[]): Promise<void> {
   const cards = (await db.cards.bulkGet(ids)).filter((c): c is Card => !!c);
   await deleteCardsInternal(cards);

@@ -3,7 +3,7 @@ import { looseKey } from '../src/core/answer/normalize';
 import { applyGrade, replay } from '../src/core/srs/scheduler';
 import { DEFAULT_SETTINGS } from '../src/core/settings';
 import { answerOf, Deck, itemKey, mcOptions, parseKey, pickDistractors, trueFalse, type ItemRef } from '../src/core/session/deck';
-import { createLearn, learnAnswer, learnProgress, learnTask, startRound } from '../src/core/session/learn';
+import { createLearn, learnAnswer, learnOverride, learnProgress, learnTask, startRound } from '../src/core/session/learn';
 import { createMatch, matchAttempt, nextMatchRound } from '../src/core/session/match';
 import { createRounds, nextRound, roundsAnswer, roundsTask } from '../src/core/session/rounds';
 import { selectItems } from '../src/core/session/selection';
@@ -111,6 +111,20 @@ describe('Lernen', () => {
     expect(t2.type).toBe('write');
     learnAnswer(s, true);
     expect(s.items[itemKey(ref('g'))].stage).toBe('done');
+  });
+  it('«Ich hatte recht» nimmt den Fehler zurück', () => {
+    const d = deck();
+    const s = createLearn(d, [ref('g'), ref('h'), ref('i'), ref('j')], { variant: 'learn', roundSize: 7, newLimit: 10, seed: 3 });
+    const key = itemKey(ref('g'));
+    s.items[key].stage = 'write';
+    s.queue = [key, ...s.queue.filter((k) => k !== key)];
+    const task = learnTask(s, d)!;
+    expect(task).toMatchObject({ type: 'write', key });
+    learnAnswer(s, false);
+    expect(s.queue).toContain(key);
+    learnOverride(s, key);
+    expect(s.queue).not.toContain(key);
+    expect(s.items[key]).toMatchObject({ stage: 'done', wrong: 0, firstResult: true });
   });
   it('respektiert die Grenze für neue Karten', () => {
     const s = createLearn(deck(), CARDS.map((c) => ref(c.id)), { variant: 'learn', roundSize: 7, newLimit: 4, seed: 1 });

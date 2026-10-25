@@ -1,0 +1,132 @@
+/*
+ * Design-Tokens von Grapnel.
+ *
+ * Eine Akzentfarbe (Kobaltblau), kühle neutrale Grautöne, dazu nur semantische Farben
+ * für richtig, falsch und Hinweis. Richtig/Falsch ist nie nur Farbe: immer mit Symbol
+ * und Text.
+ *
+ * Rundungen wachsen mit der Grösse der Fläche (feste Regel, überall gleich):
+ *   --r-sm  8px   Kleinteile (Badges, Tastenkürzel, Chips im Text)
+ *   --r-md 12px   Bedienelemente (Knöpfe, Eingabefelder, Auswahl)
+ *   --r-lg 16px   Flächen (Panels, Dialoge, Set-Kacheln)
+ *   --r-xl 24px   nur die Lernkarte
+ *   --r-full      Pillen (Filter-Chips, Fortschrittsbalken)
+ */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #fdfdfe;
+  --surface-2: #eef0f4;
+  --surface-3: #e4e7ed;
+  --border: #e1e4ea;
+  --border-strong: #cdd2db;
+  --text: #14171c;
+  --text-2: #464d5b;
+  --text-3: #646b7a;
+  --accent: #2f5bd3;
+  --accent-hover: #2850c0;
+  --accent-soft: #e8eefc;
+  --accent-text: #2249b8;
+  --on-accent: #fbfcff;
+  --success: #17794c;
+  --success-soft: #e5f4ec;
+  --danger: #c2352d;
+  --danger-soft: #fbeceb;
+  --warning: #9a5806;
+  --warning-soft: #fdf2df;
+  --shadow-color: 220 30% 30%;
+  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 1px 1px hsl(var(--shadow-color) / 0.04);
+  --shadow-md: 0 4px 14px hsl(var(--shadow-color) / 0.08), 0 1px 3px hsl(var(--shadow-color) / 0.06);
+  --shadow-lg: 0 18px 48px hsl(var(--shadow-color) / 0.14), 0 3px 10px hsl(var(--shadow-color) / 0.06);
+  --focus: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  --scrim: rgb(16 20 28 / 0.42);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --surface: #161920;
+  --surface-2: #1c2029;
+  --surface-3: #242934;
+  --border: #262b35;
+  --border-strong: #353c49;
+  --text: #eceef2;
+  --text-2: #b1b7c3;
+  --text-3: #8d94a3;
+  --accent: #7c9bf5;
+  --accent-hover: #93aef8;
+  --accent-soft: rgb(124 155 245 / 0.14);
+  --accent-text: #9db4fa;
+  --on-accent: #0d1220;
+  --success: #4cc38a;
+  --success-soft: rgb(76 195 138 / 0.14);
+  --danger: #f07c71;
+  --danger-soft: rgb(240 124 113 / 0.14);
+  --warning: #e6aa4c;
+  --warning-soft: rgb(230 170 76 / 0.14);
+  --shadow-color: 225 40% 2%;
+  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.4);
+  --shadow-md: 0 6px 18px hsl(var(--shadow-color) / 0.45), 0 1px 3px hsl(var(--shadow-color) / 0.4);
+  --shadow-lg: 0 22px 56px hsl(var(--shadow-color) / 0.6), 0 3px 10px hsl(var(--shadow-color) / 0.4);
+  --scrim: rgb(3 5 9 / 0.62);
+}
+
+:root {
+  --font: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Consolas, monospace;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-full: 999px;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+  --t-slow: 420ms;
+
+  --sidebar-w: 236px;
+  --tabbar-h: 60px;
+  --content-max: 1080px;
+
+  /* Ebenen (einzige Stelle mit z-index-Werten) */
+  --z-sticky: 10;
+  --z-nav: 20;
+  --z-overlay: 40;
+  --z-dialog: 50;
+  --z-toast: 60;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Reduzierte Bewegung: per Einstellung oder Systemvorgabe. */
+:root[data-motion='reduced'] {
+  --t-fast: 0ms;
+  --t-med: 0ms;
+  --t-slow: 0ms;
+}

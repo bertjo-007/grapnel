@@ -32,12 +32,17 @@ export class Deck {
   readonly states: Map<string, CardState>;
   readonly sets: Map<string, StudySet>;
   private variantCache = new Map<string, Set<string>>();
+  /** Rang jeder Karte innerhalb ihres Sets (Reihenfolge der Liste). */
+  readonly rank = new Map<string, number>();
   private promptIndex = new Map<string, Map<string, string[]>>();
 
   constructor(cards: Card[], states: CardState[], sets: StudySet[]) {
     this.cards = new Map(cards.map((c) => [c.id, c]));
     this.states = new Map(states.map((s) => [s.key, s]));
     this.sets = new Map(sets.map((s) => [s.id, s]));
+    const bySet = new Map<string, Card[]>();
+    for (const c of cards) bySet.set(c.setId, [...(bySet.get(c.setId) ?? []), c]);
+    for (const list of bySet.values()) list.sort((a, b) => a.position - b.position).forEach((c, i) => this.rank.set(c.id, i));
   }
 
   card(id: string): Card | undefined {
@@ -167,6 +172,10 @@ export function pickDistractors(deck: Deck, ref: ItemRef, count: number, rng: Rn
     const lb = text.length;
     score += 2 * (1 - Math.abs(la - lb) / Math.max(la, lb, 1));
     if (c.tags.some((t) => target.tags.includes(t))) score += 0.5;
+    // Wortlisten sind meist nach Themen geordnet: Nachbarn in der Liste sind plausible
+    // Ablenker (Zahlen bei Zahlen, Monate bei Monaten).
+    const dist = Math.abs((deck.rank.get(id) ?? 0) - (deck.rank.get(target.id) ?? 0));
+    score += 3 * Math.exp(-dist / 15);
     score += rng() * 1.5;
     return { id, score };
   });

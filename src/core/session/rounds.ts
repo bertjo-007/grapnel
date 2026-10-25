@@ -76,6 +76,20 @@ export function roundsAnswer(s: RoundsState, correct: boolean): void {
   s.current = null;
 }
 
+/** «Ich hatte recht»: letzte Antwort auf diese Karte zählt als richtig. */
+export function roundsOverride(s: RoundsState, key: string): void {
+  s.wrong = s.wrong.filter((k) => k !== key);
+  const log = s.roundLog.findLast((e) => e.key === key);
+  if (log && !log.correct) {
+    log.correct = true;
+    if (s.roundLog.filter((e) => e.key === key).length === 1 && s.round === 1) s.first[key] = true;
+  }
+  if (s.betweenRounds && s.wrong.length === 0) {
+    s.betweenRounds = false;
+    s.done = s.queue.length === 0;
+  }
+}
+
 export function nextRound(s: RoundsState): void {
   s.queue = shuffle(s.wrong, nextRng(s));
   s.wrong = [];
