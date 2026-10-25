@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "grapnel",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Sync-Speicher. Enthält nur verschlüsselte Pakete, nie Klartext.
+  // Vor dem ersten Deploy: `npx wrangler d1 create grapnel-sync`, die ID hier eintragen,
+  // dann `npx wrangler d1 migrations apply grapnel-sync --remote`.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "grapnel-sync",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "worker/migrations"
+    }
+  ],
+  "observability": { "enabled": true }
+}
