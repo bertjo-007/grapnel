@@ -733,6 +733,9 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+.media-controls .field > .btn {
+  align-self: flex-start;
+}
 .media-preview {
   display: flex;
   align-items: flex-end;
@@ -1178,5 +1181,31 @@
   .data-action {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* ---------- Schmale Bildschirme ---------- */
+
+@media (max-width: 600px) {
+  /* Segmente umbrechen statt seitlich aus dem Bild zu laufen. */
+  .seg {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .seg button {
+    flex: 1 1 auto;
+  }
+  .lang-row {
+    grid-template-columns: 1fr;
+  }
+  .lang-row .swap-btn {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+  .commit-bar > span {
+    display: none;
+  }
+  .commit-bar .btn {
+    width: 100%;
   }
 }

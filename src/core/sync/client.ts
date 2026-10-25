@@ -130,7 +130,9 @@ export class SyncError extends Error {
 async function request(f: typeof fetch, url: string, init: RequestInit, token: string): Promise<Response> {
   let res: Response;
   try {
-    res = await f(url, { ...init, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, ...(init.headers ?? {}) } });
+    // Zeitgrenze: eine hängende Verbindung darf den Sync nicht dauerhaft blockieren.
+    const signal = typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(30_000) : undefined;
+    res = await f(url, { ...init, signal, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, ...(init.headers ?? {}) } });
   } catch {
     throw new SyncError('offline');
   }
