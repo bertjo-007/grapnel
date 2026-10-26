@@ -13,9 +13,16 @@ npx wrangler d1 migrations apply grapnel-sync --local   # einmalig, für den Syn
 npm run dev            # http://127.0.0.1:5175
 ```
 
-Im Dev-Server legt `src/dev/seed.ts` Joshuas Wortliste einmal pro Browser als Set
-«Französischwörter» an (alle 726 Paare, auch die doppelten), sofern
-`tests/fixtures/private/franzoesischwoerter.docx` da ist. Gibt es das Set schon, passiert nichts.
+Im Dev-Server legt `src/dev/seed.ts` Joshuas Wortlisten einmal pro Browser als Sets an,
+sofern sie in `tests/fixtures/private/` liegen. Gibt es ein Set mit gleichem Titel schon,
+passiert nichts.
+
+- `franzoesischwoerter.docx`: Set «Französischwörter», alle 726 Paare, auch die doppelten.
+- `langenscheidt.json`: fünf Kapitel aus dem Langenscheidt-Grundwortschatz (1189 Karten),
+  umgewandelt aus den `.xls`-Dateien in `BM\Französisch\3 Semester`, weil der Import nur
+  `.xlsx` liest. Spalte D Französisch, E Deutsch, G Bemerkung (Info), F Wortart (Notiz);
+  Abschnitte wie «1.3 Aussehen» sind Schlagwörter.
+
 Browser-Tests starten weiter leer, weil Puppeteer `navigator.webdriver` setzt. Im
 Produktions-Build ist nichts davon enthalten.
 

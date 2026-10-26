@@ -25,7 +25,8 @@ const counts = () =>
     return Promise.all(
       sets.map(async (s) => {
         const cards = await db.cards.where('setId').equals(s.id).sortBy('position');
-        return { title: s.title, front: s.frontLang, back: s.backLang, cards: cards.length, first: [cards[0]?.front, cards[0]?.back], last: [cards.at(-1)?.front, cards.at(-1)?.back] };
+        const tags = new Set(cards.flatMap((c) => c.tags));
+        return { title: s.title, desc: s.description, front: s.frontLang, back: s.backLang, cards: cards.length, tags: tags.size, first: [cards[0]?.front, cards[0]?.back, cards[0]?.explanation, cards[0]?.notes], last: [cards.at(-1)?.front, cards.at(-1)?.back] };
       }),
     );
   });
@@ -34,10 +35,16 @@ await page.goto(`${BASE}/`, { waitUntil: 'load' });
 console.log('webdriver:', await page.evaluate(() => navigator.webdriver));
 await page.waitForSelector('.set-tile', { timeout: 20000 });
 await sleep(1500);
-console.log('Nach erstem Start:', JSON.stringify(await counts()));
+await sleep(2500);
+const before = await counts();
+for (const s of before) console.log('Nach erstem Start:', JSON.stringify(s));
 await page.reload({ waitUntil: 'load' });
 await sleep(2500);
-console.log('Nach Neuladen:', JSON.stringify(await counts()));
+const after = await counts();
+console.log('Nach Neuladen:', after.length, 'Sets,', after.reduce((n, s) => n + s.cards, 0), 'Karten');
+await page.goto(`${BASE}/sets`, { waitUntil: 'load' });
+await sleep(800);
+await shot(page, '94-seed-sets');
 
 const href = await page.$eval('.set-tile', (e) => e.getAttribute('href'));
 await page.goto(`${BASE}${href}/edit`, { waitUntil: 'load' });
