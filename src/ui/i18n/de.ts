@@ -587,6 +587,7 @@ export const de = {
   'settings.wipe.sync': 'Daten auf dem Sync-Server bleiben, bis du sie unter «Geräte synchronisieren» löschst.',
   'settings.about': 'Über Grapnel',
   'settings.about.text': 'Deine Daten liegen auf diesem Gerät. Ohne eingeschalteten Sync verlässt nichts das Gerät.',
+  'settings.about.local': 'Deine Daten liegen nur auf diesem Gerät und verlassen es nie. Sichere sie ab und zu mit «Exportieren».',
 
   'sync.title': 'Geräte synchronisieren',
   'sync.off.text': 'Lerne auf Handy und Computer mit demselben Stand. Ohne Konto.',

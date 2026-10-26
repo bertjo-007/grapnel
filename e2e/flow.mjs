@@ -1,7 +1,7 @@
 // Durchgang durch alle Modi mit Joshuas Set. Antworten werden teils richtig, teils falsch gegeben.
 import { BASE, clickText, launch, noHorizontalScroll, shot, sleep, watch } from './lib.mjs';
 
-const FIXTURE = 'tests/fixtures/private/franzoesischwoerter.docx';
+const FIXTURE = 'public/startsets/franzoesischwoerter.docx';
 const browser = await launch();
 const errors = [];
 const page = await browser.newPage();

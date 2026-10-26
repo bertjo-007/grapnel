@@ -589,6 +589,7 @@ export const en: Dict = {
   'settings.wipe.sync': 'Data on the sync server stays until you delete it under «Sync devices».',
   'settings.about': 'About Grapnel',
   'settings.about.text': 'Your data lives on this device. Without sync, nothing leaves the device.',
+  'settings.about.local': 'Your data lives only on this device and never leaves it. Back it up now and then with «Export».',
 
   'sync.title': 'Sync devices',
   'sync.off.text': 'Study on phone and computer with the same progress. No account.',

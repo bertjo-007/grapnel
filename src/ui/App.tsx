@@ -36,7 +36,7 @@ export function App() {
       <WithLanguage>
         <ToastProvider>
           <SyncProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
               <Routes>
                 <Route
                   path="/session/:sessionId"

@@ -1,7 +1,7 @@
 // Zwei Geräte (zwei Browser-Profile) über den lokalen Worker koppeln.
 import { BASE, clickText, launch, shot, sleep, watch } from './lib.mjs';
 
-const FIXTURE = 'tests/fixtures/private/franzoesischwoerter.docx';
+const FIXTURE = 'public/startsets/franzoesischwoerter.docx';
 const errors = [];
 const a = await launch();
 const b = await launch();

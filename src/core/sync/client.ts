@@ -10,6 +10,9 @@ import { applyChanges, toBase64, type Change } from './merge';
  * zusammenführen. Ohne eingeschalteten Sync läuft hier nichts, und es wird nichts gesendet.
  */
 
+/** Auf GitHub Pages gibt es keinen Sync-Server; dort ist der Sync gar nicht sichtbar. */
+export const SYNC_AVAILABLE = import.meta.env.MODE !== 'pages';
+
 export interface SyncConfig {
   key: string; // base64url, 32 Bytes
   roomId: string;

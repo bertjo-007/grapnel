@@ -6,7 +6,7 @@ import { setSyncActive, wipeAllData } from '../../core/db/repo';
 import { exportJson, restoreBackup, type GrapnelFile } from '../../core/export/export';
 import type { ArticlePolicy, Settings, ThemeChoice, UiLang } from '../../core/settings';
 import { decodeCode, encodeCode, fromBase64Url, generateKey } from '../../core/sync/crypto';
-import { deleteRemote, disableSync, enableSync } from '../../core/sync/client';
+import { deleteRemote, disableSync, enableSync, SYNC_AVAILABLE } from '../../core/sync/client';
 import type { DirectionChoice } from '../../core/types';
 import { dayKey } from '../../core/util/time';
 import { ConfirmDialog, Dialog, Field, Segmented, Stepper, Switch } from '../components';
@@ -107,7 +107,7 @@ function SyncSection() {
   }, []);
 
   const code = sync.config ? encodeCode(fromBase64Url(sync.config.key)) : '';
-  const link = sync.config ? `${location.origin}/settings#sync=${sync.config.key}` : '';
+  const link = sync.config ? `${location.origin}${import.meta.env.BASE_URL}settings#sync=${sync.config.key}` : '';
   useEffect(() => {
     if (!showCode || !link) return;
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -417,7 +417,7 @@ export function SettingsPage() {
         {!hasVoice && <p className="small muted">{t('settings.voices.none')}</p>}
       </Section>
 
-      <SyncSection />
+      {SYNC_AVAILABLE && <SyncSection />}
 
       <Section title={t('settings.data')}>
         <StorageInfo />
@@ -481,7 +481,7 @@ export function SettingsPage() {
       </Section>
 
       <Section title={t('settings.about')}>
-        <p className="small text-2">{t('settings.about.text')}</p>
+        <p className="small text-2">{t(SYNC_AVAILABLE ? 'settings.about.text' : 'settings.about.local')}</p>
       </Section>
 
       <ConfirmDialog

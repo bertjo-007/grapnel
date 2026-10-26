@@ -27,7 +27,7 @@ export function registerServiceWorker(): void {
   if (!('serviceWorker' in navigator) || import.meta.env.DEV) return;
   window.addEventListener('load', async () => {
     try {
-      const reg = await navigator.serviceWorker.register('/sw.js');
+      const reg = await navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
       const track = (w: ServiceWorker | null) => {
         if (!w) return;
         w.addEventListener('statechange', () => {

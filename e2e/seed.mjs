@@ -1,4 +1,4 @@
-// Dev-Startdaten: Wortliste wird einmal eingefügt (alle Paare), Seiten heissen nach der Sprache.
+// Startsets im Dev-Server: Wortlisten werden einmal eingefügt (alle Paare), Seiten heissen nach der Sprache.
 // Puppeteer setzt sonst navigator.webdriver, und dann bleibt die App absichtlich leer.
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';

@@ -5,7 +5,7 @@
  * - Installation: alle gebauten Dateien werden gespeichert.
  * - Seitenaufrufe: zuerst Netz (neueste Version), ohne Netz die gespeicherte App.
  * - Dateien: aus dem Speicher (gehashte Namen ändern sich nie).
- * - /api/ (Sync) läuft immer über das Netz und wird nie gespeichert.
+ * - api/ (Sync) läuft immer über das Netz und wird nie gespeichert.
  *
  * Ein neuer Worker übernimmt NICHT automatisch: Mitten in einer Lernsitzung soll
  * die App nicht unter den Händen neu laden. Die App zeigt einen Hinweis und
@@ -13,6 +13,8 @@
  */
 const VERSION = '__VERSION__';
 const PRECACHE = __PRECACHE__;
+// Pfad, unter dem die App liegt: «/» bei Cloudflare, «/grapnel/» bei GitHub Pages.
+const BASE = __BASE__;
 const CACHE = `grapnel-${VERSION}`;
 const NAV_TIMEOUT_MS = 3500;
 
@@ -42,19 +44,20 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith(`${BASE}api/`)) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
       withTimeout(fetch(request), NAV_TIMEOUT_MS)
         .then((response) => {
+          // GitHub Pages liefert Unterseiten als 404.html mit Status 404 aus; das ist trotzdem die App.
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put('/', copy));
+            caches.open(CACHE).then((cache) => cache.put(BASE, copy));
           }
           return response;
         })
-        .catch(() => caches.match('/', { ignoreVary: true }).then((hit) => hit || Response.error())),
+        .catch(() => caches.match(BASE, { ignoreVary: true }).then((hit) => hit || Response.error())),
     );
     return;
   }
@@ -64,7 +67,7 @@ self.addEventListener('fetch', (event) => {
       (hit) =>
         hit ||
         fetch(request).then((response) => {
-          if (response.ok && url.pathname.startsWith('/assets/')) {
+          if (response.ok && url.pathname.startsWith(`${BASE}assets/`)) {
             const copy = response.clone();
             caches.open(CACHE).then((cache) => cache.put(request, copy));
           }

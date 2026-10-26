@@ -11,7 +11,7 @@ import { guessAlternatingLangs } from '../src/core/import/pair';
 import { annotateRows, buildRows, summarize } from '../src/core/import/rows';
 import type { Extracted } from '../src/core/import/types';
 
-const FIXTURE = 'tests/fixtures/private/franzoesischwoerter.docx';
+const FIXTURE = 'public/startsets/franzoesischwoerter.docx';
 
 function pipeline(ex: Extracted, langs?: { front: 'fr' | 'de'; back: 'fr' | 'de' }) {
   const st = detectStructure(ex);

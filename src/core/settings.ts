@@ -47,7 +47,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  name: 'Joshua',
+  name: '',
   uiLang: 'de',
   nativeLang: 'de',
   theme: 'system',

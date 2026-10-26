@@ -2,7 +2,7 @@
 import { existsSync } from 'node:fs';
 import { BASE, clickText, fullShot, launch, noHorizontalScroll, shot, sleep, watch } from './lib.mjs';
 
-const FIXTURE = 'tests/fixtures/private/franzoesischwoerter.docx';
+const FIXTURE = 'public/startsets/franzoesischwoerter.docx';
 if (!existsSync(FIXTURE)) throw new Error('Fixture fehlt');
 
 const browser = await launch();

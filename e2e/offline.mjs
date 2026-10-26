@@ -2,7 +2,7 @@
 import { launch, shot, sleep, watch } from './lib.mjs';
 
 const BASE = process.env.GRAPNEL_URL ?? 'http://127.0.0.1:4175';
-const FIXTURE = 'tests/fixtures/private/franzoesischwoerter.docx';
+const FIXTURE = 'public/startsets/franzoesischwoerter.docx';
 const browser = await launch();
 const errors = [];
 const page = await browser.newPage();
