@@ -16,6 +16,7 @@ installViewportVars();
 registerServiceWorker();
 // Daten sollen nicht bei Platzmangel verschwinden. Installierte Apps bekommen das meist sofort.
 void requestPersistence().catch(() => false);
+if (import.meta.env.DEV) void import('./dev/seed').then((m) => m.seedDevData()).catch((e) => console.error(e));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

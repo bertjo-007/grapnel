@@ -113,7 +113,7 @@ export function FlagToggles({ card }: { card: Card }) {
 
 /** Alles zu einer Karte: Inhalt, Medien, Lernstand je Richtung und Verlauf. */
 export function CardDialog({ card, set, states, onClose }: { card: Card | null; set: StudySet; states: Map<string, CardState>; onClose: () => void }) {
-  const { t, relTime, date } = useI18n();
+  const { t, relTime, date, sideName } = useI18n();
   const logs = useCardLogs(card?.id);
   if (!card) return <Dialog open={false} onClose={onClose} title="">{null}</Dialog>;
   const replaced = new Set((logs ?? []).map((l) => l.replaces).filter(Boolean));
@@ -124,7 +124,7 @@ export function CardDialog({ card, set, states, onClose }: { card: Card | null; 
         <CardImage imageId={card.imageId} />
         <div className="card-detail-sides">
           <div>
-            <span className="field-label">{t('editor.front')}</span>
+            <span className="field-label">{sideName(set.frontLang, 'front')}</span>
             <p className="card-detail-text break pre">
               {card.front}
               <SpeakButton text={card.front} lang={set.frontLang} />
@@ -132,7 +132,7 @@ export function CardDialog({ card, set, states, onClose }: { card: Card | null; 
             </p>
           </div>
           <div>
-            <span className="field-label">{t('editor.back')}</span>
+            <span className="field-label">{sideName(set.backLang, 'back')}</span>
             <p className="card-detail-text break pre">
               {card.back}
               <SpeakButton text={card.back} lang={set.backLang} />

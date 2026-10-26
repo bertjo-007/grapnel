@@ -13,6 +13,12 @@ npx wrangler d1 migrations apply grapnel-sync --local   # einmalig, für den Syn
 npm run dev            # http://127.0.0.1:5175
 ```
 
+Im Dev-Server legt `src/dev/seed.ts` Joshuas Wortliste einmal pro Browser als Set
+«Französischwörter» an (alle 726 Paare, auch die doppelten), sofern
+`tests/fixtures/private/franzoesischwoerter.docx` da ist. Gibt es das Set schon, passiert nichts.
+Browser-Tests starten weiter leer, weil Puppeteer `navigator.webdriver` setzt. Im
+Produktions-Build ist nichts davon enthalten.
+
 ## Prüfen
 
 ```sh
@@ -24,6 +30,7 @@ node e2e/flow.mjs      # alle Modi, Handy, Dunkelmodus
 node e2e/sync.mjs      # zwei Geräte über den lokalen Worker
 node e2e/misc.mjs      # Editor, Export, Sprache, alles löschen
 node e2e/perf.mjs      # 5000 Karten
+node e2e/seed.mjs      # Wortliste aus dem Dev-Seed, Seitenbeschriftung
 GRAPNEL_URL=http://127.0.0.1:4175 node e2e/offline.mjs   # gegen den Produktions-Build
 ```
 

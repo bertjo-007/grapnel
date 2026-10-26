@@ -34,6 +34,8 @@ interface I18n {
   locale: string;
   t: T;
   langName: (l: Lang) => string;
+  /** Name einer Kartenseite: die Sprache, wenn bekannt, sonst «Vorderseite»/«Rückseite». */
+  sideName: (l: Lang, side: 'front' | 'back') => string;
   relTime: (ts: number, now?: number) => string;
   interval: (ms: number) => string;
   date: (ts: number, opts?: Intl.DateTimeFormatOptions) => string;
@@ -87,6 +89,7 @@ export function makeI18n(lang: UiLang): I18n {
     locale,
     t,
     langName: (l) => t(`lang.${l}` as Key),
+    sideName: (l, side) => (l === 'other' ? t(side === 'front' ? 'editor.front' : 'editor.back') : t(`lang.${l}` as Key)),
     relTime,
     interval,
     date: dateFmt,

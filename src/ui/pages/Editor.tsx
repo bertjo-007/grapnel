@@ -265,7 +265,9 @@ interface RowProps {
 }
 
 function EditorRow({ card, index, set, expanded, selected, focus, ...on }: RowProps) {
-  const { t } = useI18n();
+  const { t, sideName } = useI18n();
+  const frontName = sideName(set.frontLang, 'front');
+  const backName = sideName(set.backLang, 'back');
   const front = useDraft(card.front, (v) => void updateCard(card.id, { front: v }));
   const back = useDraft(card.back, (v) => void updateCard(card.id, { back: v }));
   const frontRef = useRef<HTMLTextAreaElement | null>(null);
@@ -302,8 +304,14 @@ function EditorRow({ card, index, set, expanded, selected, focus, ...on }: RowPr
           <span className="editor-no num">{index + 1}</span>
         </div>
         <div className="editor-fields">
-          <AutoTextarea {...front} inputRef={(el) => (frontRef.current = el)} ariaLabel={`${t('editor.front')} ${index + 1}`} placeholder={t('editor.front')} lang={BCP[set.frontLang]} onKeyDown={onKey} />
-          <AutoTextarea {...back} ariaLabel={`${t('editor.back')} ${index + 1}`} placeholder={t('editor.back')} lang={BCP[set.backLang]} onKeyDown={onKey} />
+          <div className="editor-field">
+            <AutoTextarea {...front} inputRef={(el) => (frontRef.current = el)} ariaLabel={`${frontName} ${index + 1}`} lang={BCP[set.frontLang]} onKeyDown={onKey} />
+            <span className="editor-side" aria-hidden="true">{frontName}</span>
+          </div>
+          <div className="editor-field">
+            <AutoTextarea {...back} ariaLabel={`${backName} ${index + 1}`} lang={BCP[set.backLang]} onKeyDown={onKey} />
+            <span className="editor-side" aria-hidden="true">{backName}</span>
+          </div>
         </div>
         <div className="editor-row-actions">
           <button className={`btn btn-ghost btn-icon btn-sm flag-btn ${card.flagDifficult ? 'on difficult' : ''}`} aria-pressed={card.flagDifficult} aria-label={t('editor.markDifficult')} title={t('editor.markDifficult')} onClick={() => void setCardFlags([card.id], { flagDifficult: !card.flagDifficult })}>

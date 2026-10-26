@@ -43,7 +43,7 @@ function statusBadge(s: RowStatus): string {
 }
 
 export function ImportPage() {
-  const { t, langName } = useI18n();
+  const { t, langName, sideName } = useI18n();
   const toast = useToast();
   const [params] = useSearchParams();
   const presetSet = params.get('set');
@@ -595,8 +595,8 @@ export function ImportPage() {
                     <span className="break unassigned-text">{r.front}</span>
                   ) : (
                     <>
-                      <input className="input input-sm" value={r.front} aria-label={`${t('editor.front')} #${r.index + 1}`} onChange={(e) => editRow(r.key, { front: e.target.value })} />
-                      <input className="input input-sm" value={r.back} aria-label={`${t('editor.back')} #${r.index + 1}`} onChange={(e) => editRow(r.key, { back: e.target.value })} />
+                      <input className="input input-sm" value={r.front} aria-label={`${sideName(langs.front, 'front')} #${r.index + 1}`} onChange={(e) => editRow(r.key, { front: e.target.value })} />
+                      <input className="input input-sm" value={r.back} aria-label={`${sideName(langs.back, 'back')} #${r.index + 1}`} onChange={(e) => editRow(r.key, { back: e.target.value })} />
                     </>
                   )}
                 </div>

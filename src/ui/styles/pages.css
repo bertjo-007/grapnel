@@ -705,6 +705,17 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+.editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.editor-side {
+  padding-left: 2px;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
 .textarea.editor-text {
   min-height: 44px;
   resize: none;
