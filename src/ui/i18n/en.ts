@@ -629,7 +629,7 @@ export const en: Dict = {
 
   'help.srs.title': 'How reviewing works',
   'help.srs.p1': 'Grapnel schedules when you should review each card. It uses FSRS, a method that estimates from your previous answers how long you will remember a card.',
-  'help.srs.p2': 'What you know well comes back at growing intervals. What you forget comes back soon. Each direction (for example French to German and back) is scheduled separately.',
+  'help.srs.p2': 'What you know well comes back at growing intervals. What you forget comes back soon. Each direction (for example French to German and back) is scheduled separately. Overviews count a card as far as you know it in at least one direction; the set page and statistics can show each direction on its own.',
   'help.srs.h2': 'What changes the schedule',
   'help.srs.l1': 'Write: correct lengthens the interval, almost correct (with tolerance) a bit less, wrong resets it.',
   'help.srs.l2': 'Flashcards: your own rating counts. Knew it acts like «Good», didn’t know like «Again».',

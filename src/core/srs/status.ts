@@ -17,6 +17,23 @@ export function statusOf(s: CardState | undefined | null): CardStatus {
   return 'review';
 }
 
+export const STATUS_RANK: Record<CardStatus, number> = { new: 0, learning: 1, review: 2, mastered: 3 };
+
+/**
+ * Für die Ansicht «Beide Richtungen»: Eine Karte zählt so weit, wie sie in mindestens einer
+ * Richtung ist. Sonst bliebe zum Beispiel Schreiben von Deutsch nach Französisch unsichtbar,
+ * solange die Übersicht nur Französisch nach Deutsch zeigt.
+ */
+export function strongestState(list: (CardState | undefined)[]): CardState | undefined {
+  let best: CardState | undefined;
+  for (const s of list) {
+    if (!s) continue;
+    const diff = best ? STATUS_RANK[statusOf(s)] - STATUS_RANK[statusOf(best)] : 1;
+    if (diff > 0 || (diff === 0 && s.fsrs.stability > best!.fsrs.stability)) best = s;
+  }
+  return best;
+}
+
 /** Schon gelernt und jetzt fällig. Lernschritte (Minuten) genau, Wiederholungen tageweise. */
 export function isDueNow(s: CardState | undefined | null, now: number): boolean {
   if (!s || s.fsrs.state === 0) return false;

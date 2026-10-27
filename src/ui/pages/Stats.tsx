@@ -4,21 +4,21 @@ import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { db } from '../../core/db/db';
 import { activityByDay, effectiveLogs, forecast, mostMissed, overall, progressOverTime, setStats, streakOf } from '../../core/stats/stats';
-import type { CardState, Direction } from '../../core/types';
+import type { CardState, DirectionChoice } from '../../core/types';
 import { lastDays } from '../../core/util/time';
 import { AccuracyLine, Bars, Heatmap, StackedStatus } from '../charts';
 import { EmptyState, LoadingBlock, Segmented } from '../components';
 import { useI18n } from '../i18n';
 import { PageHeader } from '../shell/Shell';
 import { useSettings } from '../state';
-import { StatusBar, StatusLegend, statsDirection } from '../widgets';
+import { StatusBar, StatusLegend } from '../widgets';
 
 export function StatsPage() {
   const { t, relTime, percent, langName } = useI18n();
   const { settings } = useSettings();
   const [params, setParams] = useSearchParams();
   const scope = params.get('set') ?? 'all';
-  const [direction, setDirection] = useState<Direction>(statsDirection(settings));
+  const [direction, setDirection] = useState<DirectionChoice>('both');
 
   const data = useLiveQuery(async () => {
     const sets = await db.sets.toArray();
@@ -45,7 +45,7 @@ export function StatsPage() {
       heat: activityByDay(logs, lastDays(now, 18 * 7)),
       month: activityByDay(logs, lastDays(now, 30)),
       progress: progressOverTime(data.cards, logs, direction, settings, now, 30),
-      forecast: forecast(data.states.filter((s) => s.direction === direction), now, 14),
+      forecast: forecast(direction === 'both' ? data.states : data.states.filter((s) => s.direction === direction), now, 14),
       missed: mostMissed(logs, 10),
       perSet: data.inScope.map((s) => {
         const cards = data.cards.filter((c) => c.setId === s.id);
@@ -85,6 +85,7 @@ export function StatsPage() {
         value={direction}
         onChange={setDirection}
         options={[
+          { value: 'both', label: t('dir.both') },
           { value: 'f2b', label: `${langName(frontLang)} → ${langName(backLang)}` },
           { value: 'b2f', label: `${langName(backLang)} → ${langName(frontLang)}` },
         ]}

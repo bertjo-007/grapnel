@@ -10,7 +10,7 @@ import { EmptyState, LoadingBlock, Progress } from '../components';
 import { useSets } from '../hooks';
 import { useI18n, type Key } from '../i18n';
 import { useSettings } from '../state';
-import { EMPTY_STATS, SetTile, statsDirection, useSetSummaries } from '../widgets';
+import { EMPTY_STATS, SetTile, useSetSummaries } from '../widgets';
 
 function greetingKey(hour: number): 'morning' | 'day' | 'evening' {
   if (hour < 11) return 'morning';
@@ -23,7 +23,7 @@ export function Home() {
   const { settings } = useSettings();
   const navigate = useNavigate();
   const sets = useSets();
-  const summaries = useSetSummaries(statsDirection(settings));
+  const summaries = useSetSummaries();
   const session = useLiveQuery(async () => (await db.sessions.where('status').equals('active').toArray()).sort((a, b) => b.updatedAt - a.updatedAt)[0] ?? null, []);
   const recentLogs = useLiveQuery(() => db.reviewLogs.where('at').above(startOfDay(Date.now()) - 400 * 86400000).toArray(), []);
   const nextDue = useLiveQuery(async () => {

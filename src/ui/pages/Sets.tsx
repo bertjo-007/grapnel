@@ -6,8 +6,7 @@ import { EmptyState, LoadingBlock, Segmented } from '../components';
 import { useHotkeys, useSets } from '../hooks';
 import { useI18n } from '../i18n';
 import { PageHeader } from '../shell/Shell';
-import { useSettings } from '../state';
-import { EMPTY_STATS, SetTile, StatusBar, statsDirection, useSetSummaries } from '../widgets';
+import { EMPTY_STATS, SetTile, StatusBar, useSetSummaries } from '../widgets';
 
 type Sort = 'recent' | 'name' | 'created' | 'updated';
 type View = 'grid' | 'list';
@@ -25,9 +24,8 @@ function readPrefs(): { sort: Sort; view: View } {
 
 export function SetsPage() {
   const { t, relTime, locale } = useI18n();
-  const { settings } = useSettings();
   const sets = useSets();
-  const summaries = useSetSummaries(statsDirection(settings));
+  const summaries = useSetSummaries();
   const [q, setQ] = useState('');
   const [tab, setTab] = useState<'active' | 'archived'>('active');
   const [{ sort, view }, setPrefs] = useState(readPrefs);

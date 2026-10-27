@@ -627,7 +627,7 @@ export const de = {
 
   'help.srs.title': 'So funktioniert das Wiederholen',
   'help.srs.p1': 'Grapnel plant für jede Karte, wann du sie wiederholen solltest. Grundlage ist FSRS, ein Verfahren, das aus deinen bisherigen Antworten schätzt, wie lange du dir eine Karte merkst.',
-  'help.srs.p2': 'Was du sicher weisst, kommt in immer grösseren Abständen wieder. Was du vergisst, kommt bald wieder. Jede Richtung (zum Beispiel Französisch nach Deutsch und umgekehrt) wird getrennt geplant.',
+  'help.srs.p2': 'Was du sicher weisst, kommt in immer grösseren Abständen wieder. Was du vergisst, kommt bald wieder. Jede Richtung (zum Beispiel Französisch nach Deutsch und umgekehrt) wird getrennt geplant. In den Übersichten zählt eine Karte so weit, wie du sie in mindestens einer Richtung kannst; auf der Set-Seite und in der Statistik lässt sich jede Richtung einzeln ansehen.',
   'help.srs.h2': 'Was die Planung verändert',
   'help.srs.l1': 'Schreiben: richtig verlängert den Abstand, fast richtig (mit Toleranz) etwas weniger, falsch setzt ihn zurück.',
   'help.srs.l2': 'Karteikarten: deine eigene Bewertung zählt. Gewusst wirkt wie «Gut», nicht gewusst wie «Nochmals».',

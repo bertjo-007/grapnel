@@ -1,7 +1,7 @@
 import type { Settings } from '../settings';
 import { applyGrade, sortLogs, stateKey } from '../srs/scheduler';
-import { isAutoDifficult, isDueToday, MASTERED_STABILITY_DAYS, statusOf, type CardStatus } from '../srs/status';
-import type { Card, CardState, Direction, FsrsData, ReviewLog, Session } from '../types';
+import { isAutoDifficult, isDueToday, MASTERED_STABILITY_DAYS, STATUS_RANK, statusOf, strongestState, type CardStatus } from '../srs/status';
+import type { Card, CardState, Direction, DirectionChoice, FsrsData, ReviewLog, Session } from '../types';
 import { addDays, dayKey, endOfDay, lastDays } from '../util/time';
 
 /**
@@ -27,15 +27,26 @@ export interface SetStats {
   lastActivity: number | null;
 }
 
-export function setStats(cards: Card[], states: Map<string, CardState>, direction: Direction, now = Date.now()): SetStats {
+const DIRECTIONS: Direction[] = ['f2b', 'b2f'];
+
+/** Lernstände einer Karte in der gewählten Ansicht: eine Richtung oder beide. */
+export function statesFor(states: Map<string, CardState>, cardId: string, view: DirectionChoice): (CardState | undefined)[] {
+  return (view === 'both' ? DIRECTIONS : [view]).map((d) => states.get(stateKey(cardId, d)));
+}
+
+/**
+ * Kennzahlen eines Sets. Bei «beide» zählt jede Karte mit ihrer weiter fortgeschrittenen
+ * Richtung; schwierig und fällig ist sie, sobald es eine Richtung ist.
+ */
+export function setStats(cards: Card[], states: Map<string, CardState>, view: DirectionChoice, now = Date.now()): SetStats {
   const s: SetStats = { total: cards.length, new: 0, learning: 0, review: 0, mastered: 0, difficult: 0, flagged: 0, dueToday: 0, lastActivity: null };
   for (const c of cards) {
-    const st = states.get(stateKey(c.id, direction));
-    s[statusOf(st)]++;
-    if (isAutoDifficult(st)) s.difficult++;
+    const list = statesFor(states, c.id, view);
+    s[statusOf(strongestState(list))]++;
+    if (list.some((st) => isAutoDifficult(st))) s.difficult++;
     if (c.flagDifficult || c.flagImportant) s.flagged++;
-    if (isDueToday(st, now)) s.dueToday++;
-    if (st?.lastAt && (s.lastActivity === null || st.lastAt > s.lastActivity)) s.lastActivity = st.lastAt;
+    if (list.some((st) => isDueToday(st, now))) s.dueToday++;
+    for (const st of list) if (st?.lastAt && (s.lastActivity === null || st.lastAt > s.lastActivity)) s.lastActivity = st.lastAt;
   }
   return s;
 }
@@ -153,37 +164,50 @@ export type StatusCounts = Record<CardStatus, number>;
  * Entwicklung des Lernstands: für jeden Tag, wie viele Karten am Abend neu, im Lernen,
  * in Wiederholung oder sicher waren. Berechnet durch Nachspielen des Verlaufs.
  */
-export function progressOverTime(cards: Card[], logs: ReviewLog[], direction: Direction, settings: Settings, now = Date.now(), days = 30): ({ day: string } & StatusCounts)[] {
+export function progressOverTime(cards: Card[], logs: ReviewLog[], view: DirectionChoice, settings: Settings, now = Date.now(), days = 30): ({ day: string } & StatusCounts)[] {
   const dayList = lastDays(now, days);
   const ends = dayList.map((d) => endOfDay(new Date(`${d}T12:00:00`).getTime()));
-  const byCard = new Map<string, ReviewLog[]>();
+  const dirs = view === 'both' ? DIRECTIONS : [view];
+  const byKey = new Map<string, ReviewLog[]>();
   for (const l of effectiveLogs(logs)) {
-    if (l.direction !== direction) continue;
-    byCard.set(l.cardId, [...(byCard.get(l.cardId) ?? []), l]);
+    if (!dirs.includes(l.direction)) continue;
+    const key = stateKey(l.cardId, l.direction);
+    byKey.set(key, [...(byKey.get(key) ?? []), l]);
   }
   const rows = dayList.map((day) => ({ day, new: 0, learning: 0, review: 0, mastered: 0 }));
   for (const card of cards) {
-    const timeline: { at: number; status: CardStatus }[] = [];
-    let f: FsrsData | null = null;
-    let lastResult: ReviewLog['result'] | null = null;
-    for (const l of sortLogs(byCard.get(card.id) ?? [])) {
-      if (l.rating !== null) f = applyGrade(f, l.rating, l.at, settings.srs);
-      if (l.result !== 'skipped') lastResult = l.result;
-      let status: CardStatus = 'new';
-      if (f && f.state !== 0) {
-        if (f.state === 1 || f.state === 3) status = 'learning';
-        else status = f.stability >= MASTERED_STABILITY_DAYS && lastResult !== 'wrong' ? 'mastered' : 'review';
-      }
-      timeline.push({ at: l.at, status });
-    }
-    let ti = -1;
+    // Je Richtung eine Zeitreihe; pro Tag zählt die weiter fortgeschrittene (wie in setStats).
+    const timelines = dirs.map((d) => timelineOf(byKey.get(stateKey(card.id, d)) ?? [], settings));
+    const pos = timelines.map(() => -1);
     ends.forEach((end, i) => {
       if (card.createdAt > end) return;
-      while (ti + 1 < timeline.length && timeline[ti + 1].at <= end) ti++;
-      rows[i][ti >= 0 ? timeline[ti].status : 'new']++;
+      let best: CardStatus = 'new';
+      timelines.forEach((tl, j) => {
+        while (pos[j] + 1 < tl.length && tl[pos[j] + 1].at <= end) pos[j]++;
+        const st = pos[j] >= 0 ? tl[pos[j]].status : 'new';
+        if (STATUS_RANK[st] > STATUS_RANK[best]) best = st;
+      });
+      rows[i][best]++;
     });
   }
   return rows;
+}
+
+function timelineOf(logs: ReviewLog[], settings: Settings): { at: number; status: CardStatus }[] {
+  const timeline: { at: number; status: CardStatus }[] = [];
+  let f: FsrsData | null = null;
+  let lastResult: ReviewLog['result'] | null = null;
+  for (const l of sortLogs(logs)) {
+    if (l.rating !== null) f = applyGrade(f, l.rating, l.at, settings.srs);
+    if (l.result !== 'skipped') lastResult = l.result;
+    let status: CardStatus = 'new';
+    if (f && f.state !== 0) {
+      if (f.state === 1 || f.state === 3) status = 'learning';
+      else status = f.stability >= MASTERED_STABILITY_DAYS && lastResult !== 'wrong' ? 'mastered' : 'review';
+    }
+    timeline.push({ at: l.at, status });
+  }
+  return timeline;
 }
 
 /** Erster Tag mit Aktivität (für sinnvolle Zeitachsen ohne leere Vorgeschichte). */

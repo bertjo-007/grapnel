@@ -3,17 +3,15 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { db } from '../core/db/db';
-import type { Settings } from '../core/settings';
 import { setStats, type SetStats } from '../core/stats/stats';
-import type { CardState, Direction, StudyMode, StudySet } from '../core/types';
+import type { CardState, DirectionChoice, StudyMode, StudySet } from '../core/types';
 import { useI18n, type Key } from './i18n';
 
-export function statsDirection(settings: Settings): Direction {
-  return settings.defaultDirection === 'b2f' ? 'b2f' : 'f2b';
-}
-
-/** Kennzahlen aller Sets auf einmal (eine Abfrage für Startseite und Übersicht). */
-export function useSetSummaries(direction: Direction): Map<string, SetStats> | undefined {
+/**
+ * Kennzahlen aller Sets auf einmal (eine Abfrage für Startseite und Übersicht). Standard
+ * sind beide Richtungen, damit jedes Lernen sichtbar wird, egal in welche Richtung.
+ */
+export function useSetSummaries(direction: DirectionChoice = 'both'): Map<string, SetStats> | undefined {
   const data = useLiveQuery(async () => {
     const [cards, states] = await Promise.all([db.cards.toArray(), db.cardStates.toArray()]);
     return { cards, states };

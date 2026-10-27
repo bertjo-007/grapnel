@@ -4,18 +4,17 @@ import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { looseKey } from '../../core/answer/normalize';
 import { archiveSet, deleteSet, duplicateSet } from '../../core/db/repo';
-import { setStats } from '../../core/stats/stats';
-import { stateKey } from '../../core/srs/scheduler';
-import { isAutoDifficult, isDueNow, lastWasWrong, statusOf } from '../../core/srs/status';
-import type { Card } from '../../core/types';
+import { setStats, statesFor } from '../../core/stats/stats';
+import { isAutoDifficult, isDueNow, lastWasWrong, statusOf, strongestState } from '../../core/srs/status';
+import type { Card, DirectionChoice } from '../../core/types';
 import { CardDialog, FlagToggles, StatusBadge } from '../cardview';
-import { ConfirmDialog, EmptyState, LoadingBlock, Menu } from '../components';
+import { ConfirmDialog, EmptyState, LoadingBlock, Menu, Segmented } from '../components';
 import { ExportDialog } from '../exporting';
 import { useCards, useHotkeys, useSet, useSetStates } from '../hooks';
 import { useI18n, type Key } from '../i18n';
 import { PageHeader } from '../shell/Shell';
-import { useSettings, useToast } from '../state';
-import { ModeGrid, StatusBar, StatusLegend, statsDirection } from '../widgets';
+import { useToast } from '../state';
+import { ModeGrid, StatusBar, StatusLegend } from '../widgets';
 import { NotFound } from './NotFound';
 
 type Filter = 'all' | 'due' | 'new' | 'difficult' | 'flagged' | 'wrong' | 'mastered';
@@ -24,7 +23,6 @@ const FILTERS: Filter[] = ['all', 'due', 'new', 'difficult', 'flagged', 'wrong',
 export function SetDetail() {
   const { setId } = useParams();
   const { t, langName } = useI18n();
-  const { settings } = useSettings();
   const toast = useToast();
   const navigate = useNavigate();
   const set = useSet(setId);
@@ -40,7 +38,7 @@ export function SetDetail() {
   const listRef = useRef<HTMLDivElement>(null);
   useHotkeys({ '/': () => search.current?.focus() });
 
-  const dir = statsDirection(settings);
+  const [dir, setDir] = useState<DirectionChoice>('both');
   const stats = useMemo(() => (cards && states ? setStats(cards, states, dir) : null), [cards, states, dir]);
   const tags = useMemo(() => Array.from(new Set((cards ?? []).flatMap((c) => c.tags))).sort(), [cards]);
 
@@ -51,20 +49,20 @@ export function SetDetail() {
     return cards.filter((c) => {
       if (tag && !c.tags.includes(tag)) return false;
       if (needle && !looseKey(`${c.front} ${c.back} ${c.example} ${c.notes} ${c.tags.join(' ')}`).includes(needle)) return false;
-      const st = states.get(stateKey(c.id, dir));
+      const list = statesFor(states, c.id, dir);
       switch (filter) {
         case 'due':
-          return isDueNow(st, now);
+          return list.some((st) => isDueNow(st, now));
         case 'new':
-          return statusOf(st) === 'new';
+          return statusOf(strongestState(list)) === 'new';
         case 'difficult':
-          return isAutoDifficult(st);
+          return list.some((st) => isAutoDifficult(st));
         case 'flagged':
           return c.flagDifficult || c.flagImportant;
         case 'wrong':
-          return lastWasWrong(st);
+          return list.some((st) => lastWasWrong(st));
         case 'mastered':
-          return statusOf(st) === 'mastered';
+          return statusOf(strongestState(list)) === 'mastered';
         default:
           return true;
       }
@@ -87,7 +85,7 @@ export function SetDetail() {
     new: stats.new,
     difficult: stats.difficult,
     flagged: stats.flagged,
-    wrong: cards.filter((c) => lastWasWrong(states.get(stateKey(c.id, dir)))).length,
+    wrong: cards.filter((c) => statesFor(states, c.id, dir).some((st) => lastWasWrong(st))).length,
     mastered: stats.mastered,
   };
 
@@ -205,6 +203,16 @@ export function SetDetail() {
             </div>
             <StatusBar stats={stats} />
             <StatusLegend stats={stats} />
+            <Segmented
+              label={t('setup.direction')}
+              value={dir}
+              onChange={setDir}
+              options={[
+                { value: 'both', label: t('dir.both') },
+                { value: 'f2b', label: `${langName(set.frontLang)} → ${langName(set.backLang)}` },
+                { value: 'b2f', label: `${langName(set.backLang)} → ${langName(set.frontLang)}` },
+              ]}
+            />
           </section>
 
           <section>
@@ -268,7 +276,7 @@ export function SetDetail() {
                       <span className="card-row-front break">{c.front || <span className="muted">-</span>}</span>
                       <span className="card-row-back break text-2">{c.back || <span className="muted">-</span>}</span>
                       <span className="card-row-meta">
-                        <StatusBadge state={states.get(stateKey(c.id, dir))} />
+                        <StatusBadge state={strongestState(statesFor(states, c.id, dir))} />
                         <FlagToggles card={c} />
                       </span>
                     </div>

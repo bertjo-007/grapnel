@@ -17,6 +17,7 @@ import { commitImport } from '../src/core/import/commit';
 import { detectStructure } from '../src/core/import/detect';
 import { extractCsv, extractJson } from '../src/core/import/extract/text';
 import { annotateRows, buildRows } from '../src/core/import/rows';
+import { progressOverTime, setStats } from '../src/core/stats/stats';
 import type { Card } from '../src/core/types';
 
 const ordered = (setId: string) => db.cards.where('[setId+position]').between([setId, -Infinity], [setId, Infinity]).toArray();
@@ -59,6 +60,37 @@ describe('Antworten und Lernstand', () => {
     expect(await db.cards.count()).toBe(0);
     expect(await db.reviewLogs.count()).toBe(0);
     expect(await db.cardStates.count()).toBe(0);
+  });
+
+  it('zeigt Schreiben von Deutsch nach Französisch im Lernstand beider Richtungen', async () => {
+    const settings = await getSettings();
+    const set = await createSet({ title: 'Richtung', frontLang: 'fr', backLang: 'de' });
+    const cards = await addCards(set.id, [
+      { front: 'la maison', back: 'das Haus' },
+      { front: 'le chat', back: 'die Katze' },
+      { front: 'le chien', back: 'der Hund' },
+    ]);
+    // Karte 1 nur DE→FR geschrieben, Karte 2 in beiden Richtungen, Karte 3 nie.
+    const write = (card: Card, direction: 'f2b' | 'b2f', result: 'correct' | 'wrong', at: number) =>
+      recordAnswer({ card, direction, sessionId: null, mode: 'write', task: 'write', result, rating: result === 'correct' ? 3 : 1, at }, settings);
+    const t0 = Date.now();
+    await write(cards[0], 'b2f', 'correct', t0);
+    await write(cards[1], 'f2b', 'correct', t0);
+    await write(cards[1], 'b2f', 'wrong', t0 + 60_000);
+
+    const states = new Map((await db.cardStates.toArray()).map((s) => [s.key, s]));
+    const both = setStats(cards, states, 'both', t0 + 120_000);
+    expect(both.new).toBe(1);
+    expect(both.learning).toBe(2);
+    expect(both.lastActivity).toBe(t0 + 60_000);
+    // Die einzelnen Richtungen bleiben getrennt sichtbar.
+    expect(setStats(cards, states, 'f2b', t0 + 120_000).new).toBe(2);
+    expect(setStats(cards, states, 'b2f', t0 + 120_000).new).toBe(1);
+
+    const logs = await db.reviewLogs.toArray();
+    const days = progressOverTime(cards, logs, 'both', settings, t0 + 120_000, 3);
+    expect(days.at(-1)).toMatchObject({ new: 1, learning: 2 });
+    expect(progressOverTime(cards, logs, 'f2b', settings, t0 + 120_000, 3).at(-1)).toMatchObject({ new: 2, learning: 1 });
   });
 });
 
