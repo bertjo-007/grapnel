@@ -23,12 +23,16 @@ export function FlashRunner({ session }: { session: Session }) {
   const { deck, record } = useStudy();
   const frame = useFrame();
   const { state, update, finish } = useSessionState<State>(session);
-  const [flipped, setFlipped] = useState(false);
   const [drag, setDrag] = useState(0);
   const dragStart = useRef<{ x: number; y: number } | null>(null);
   const shownAt = useRef(Date.now());
   const rating = state.rating ?? settings.flashcardRating;
   const key = state.order[state.index];
+  // Umgedreht gilt nur für genau diese Karte in dieser Runde. Ein einfaches true/false
+  // würde beim Weiterblättern einen Moment lang die Rückseite der nächsten Karte zeigen.
+  const cardId = `${key}:${state.round}`;
+  const [flippedFor, setFlippedFor] = useState<string | null>(null);
+  const flipped = flippedFor === cardId;
   const ref = key ? parseKey(key) : null;
   const card = ref ? deck.card(ref.c) : undefined;
   const reduced = motionReduced(settings);
@@ -36,7 +40,6 @@ export function FlashRunner({ session }: { session: Session }) {
   const progress = { done: Math.min(state.index + (state.done ? 1 : 0), state.order.length), total: state.order.length };
   useEffect(() => frame.setProgress(progress.done, progress.total), [progress.done, progress.total, frame]);
   useEffect(() => {
-    setFlipped(false);
     shownAt.current = Date.now();
   }, [key, state.round]);
   useEffect(() => {
@@ -100,7 +103,7 @@ export function FlashRunner({ session }: { session: Session }) {
     update((s) => flashRate(s, grade), { done: Math.min(state.index + 1, state.order.length), total: state.order.length });
     await record(ref, 'flashcard', grade === 1 ? 'wrong' : 'correct', { selfGrade: grade, elapsedMs: elapsed });
   };
-  const flip = () => setFlipped((f) => !f);
+  const flip = () => setFlippedFor((f) => (f === cardId ? null : cardId));
   const suppressClick = useRef(0);
 
   useHotkeys(
@@ -179,6 +182,8 @@ export function FlashRunner({ session }: { session: Session }) {
   return (
     <div className="flash">
       <div
+        // Neue Karte = neues Element: Sie erscheint direkt mit der Vorderseite, ohne Rückdreh-Animation.
+        key={cardId}
         className={`flashcard ${flipped ? 'flipped' : ''} ${reduced ? 'fade' : ''}`}
         style={drag ? { transform: `translateX(${drag}px) rotate(${drag / 40}deg)` } : undefined}
         role="button"
