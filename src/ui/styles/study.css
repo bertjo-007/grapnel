@@ -849,15 +849,26 @@
 
 /* ---------- Juwelen ---------- */
 
-/* Sechs Juwelenfarben, je mit eigener Form (siehe GemsRunner). Nur hier, nicht als Akzent. */
+/*
+ * Sechs Juwelenfarben (nur hier, nicht als Akzent). Die Symbole sind eigene SVGs
+ * (gemArt.tsx) und färben sich über currentColor; Licht und Schatten der Facetten
+ * sind weiss bzw. schwarz mit Deckkraft und passen so auf hell und dunkel.
+ */
 .gems {
-  --gem-0: #d93f4c;
-  --gem-1: #d99a0b;
-  --gem-2: #2e9a5f;
-  --gem-3: #3a63d8;
-  --gem-4: #8a4fc4;
-  --gem-5: #12968a;
+  --gem-0: #d63a49;
+  --gem-1: #e0a110;
+  --gem-2: #2a9a5c;
+  --gem-3: #3561d6;
+  --gem-4: #8748c4;
+  --gem-5: #10978a;
   --gem-cell: var(--surface-2);
+  --gem-edge: rgb(0 0 0 / 0.3);
+  --gem-drop: drop-shadow(0 1px 1.2px rgb(20 24 32 / 0.22));
+  --gem-stone: #868d99;
+  --bomb-cap: #3b404b;
+  --bomb-fuse: #7a6248;
+  --gem-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --gem-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   display: flex;
   flex-direction: column;
   gap: var(--s-4);
@@ -866,14 +877,20 @@
   margin: 0 auto;
 }
 :root[data-theme='dark'] .gems {
-  --gem-0: #f0707a;
-  --gem-1: #f2c14e;
-  --gem-2: #5fcf8f;
-  --gem-3: #7c9bf5;
-  --gem-4: #b78ae8;
-  --gem-5: #4fd1c1;
-  --gem-cell: var(--surface-2);
+  --gem-0: #f06b78;
+  --gem-1: #f3c24f;
+  --gem-2: #56cc8b;
+  --gem-3: #7d9cf6;
+  --gem-4: #b585ea;
+  --gem-5: #45cfbf;
+  --gem-edge: rgb(0 0 0 / 0.45);
+  --gem-drop: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.55));
+  --gem-stone: #727a88;
+  --bomb-cap: #b9c0cc;
+  --bomb-fuse: #cdb798;
 }
+
+/* Kopfzeile */
 .gems-hud {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -891,16 +908,25 @@
 .gems-stat strong {
   font-size: 1.35rem;
   line-height: 1.2;
+  transform-origin: left center;
 }
 .gems-stat.low strong {
   color: var(--danger);
 }
+.gems-score {
+  animation: gems-bump 220ms var(--gem-out);
+}
+
+/* Spielfeld */
 .gems-stage {
   position: relative;
-  transition: opacity var(--t-fast) var(--ease);
+  transition: opacity 200ms ease;
 }
 .gems-stage.dimmed {
-  opacity: 0.35;
+  opacity: 0.4;
+}
+.gems-stage.dimmed .gem-art {
+  filter: saturate(0.4);
 }
 .gems-board {
   position: relative;
@@ -914,6 +940,7 @@
   user-select: none;
   -webkit-user-select: none;
   overflow: hidden;
+  contain: layout paint;
 }
 .gem-slot {
   position: absolute;
@@ -925,16 +952,14 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: transform 260ms cubic-bezier(0.3, 0.7, 0.4, 1);
+  transition: transform 260ms var(--gem-out);
   -webkit-tap-highlight-color: transparent;
 }
 .gem-slot:focus-visible {
   outline: none;
 }
-.gem-slot:focus-visible .gem,
-.gem-slot.cursor:focus-visible .gem {
-  box-shadow: 0 0 0 2.5px var(--accent);
-}
+
+/* Ein Juwel: Zelle plus Symbol */
 .gem {
   position: relative;
   display: grid;
@@ -943,15 +968,10 @@
   height: 100%;
   border-radius: var(--r-sm);
   background: var(--gem-cell);
-  animation: gem-in 320ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+  animation: gem-in 300ms var(--gem-out) both;
   transition:
-    transform 160ms var(--ease),
-    opacity 160ms var(--ease),
-    box-shadow 120ms var(--ease);
-}
-.gem-shape {
-  width: 70%;
-  height: 70%;
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 .gem.c0 { color: var(--gem-0); }
 .gem.c1 { color: var(--gem-1); }
@@ -959,62 +979,168 @@
 .gem.c3 { color: var(--gem-3); }
 .gem.c4 { color: var(--gem-4); }
 .gem.c5 { color: var(--gem-5); }
+.gem-art {
+  width: 80%;
+  height: 80%;
+  overflow: visible;
+  filter: var(--gem-drop);
+  transition: transform 160ms var(--gem-out);
+}
+.gem-edge {
+  stroke: var(--gem-edge);
+}
+
+/* Besondere Juwelen */
 .gem.stone {
-  background: var(--border-strong);
-  color: var(--text-3);
+  color: var(--gem-stone);
+  background: color-mix(in srgb, var(--gem-stone) 22%, var(--gem-cell));
   cursor: not-allowed;
 }
 .gem.question {
-  box-shadow: inset 0 0 0 2px currentColor;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, currentColor 60%, transparent);
+}
+.gem.poison {
+  background: repeating-linear-gradient(135deg, var(--gem-cell) 0 5px, color-mix(in srgb, var(--danger) 10%, var(--gem-cell)) 5px 8px);
 }
 .gem-badge {
   position: absolute;
-  right: 2px;
-  bottom: 2px;
-  min-width: 1.4em;
+  right: 1px;
+  bottom: 1px;
+  min-width: 1.5em;
   padding: 0 3px;
   border-radius: 6px;
+  border: 1.5px solid var(--gem-cell);
   background: var(--text);
   color: var(--bg);
   font-size: clamp(0.58rem, 2.2vw, 0.72rem);
   font-weight: 650;
-  line-height: 1.5;
+  line-height: 1.45;
   text-align: center;
 }
-.gem-mark {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-  width: 38%;
-  height: 38%;
-  color: var(--text);
+.gem-badge.minus {
+  background: var(--danger);
+  color: #fff;
 }
 .gem.bomb {
-  background: color-mix(in srgb, currentColor 18%, var(--gem-cell));
+  background: color-mix(in srgb, currentColor 16%, var(--gem-cell));
 }
-.gem.bomb .gem-mark {
-  animation: gem-glow 1.4s ease-in-out infinite;
+.bomb-cap {
+  fill: var(--bomb-cap);
 }
-.gem.poison {
-  background: repeating-linear-gradient(135deg, var(--gem-cell) 0 6px, color-mix(in srgb, var(--text) 9%, var(--gem-cell)) 6px 9px);
+.bomb-fuse {
+  stroke: var(--bomb-fuse);
 }
-.gem-slot.selected .gem {
-  transform: scale(0.9);
-  box-shadow: 0 0 0 2.5px var(--text);
+.bomb-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bomb-spark 1.2s ease-in-out infinite alternate;
 }
-.gem-slot.bad .gem {
-  animation: gem-shake 300ms var(--ease);
-}
-.gem-slot.pop .gem {
-  transform: scale(0.2);
-  opacity: 0;
-  transition-duration: 220ms;
-}
-@media (hover: hover) {
-  .gem-slot:not(.selected):hover .gem:not(.stone) {
-    transform: scale(1.05);
+
+/* Zustände: Hover nur mit Maus, gedrückt, ausgewählt, Fokus */
+@media (hover: hover) and (pointer: fine) {
+  .gem-slot:hover .gem:not(.stone) .gem-art {
+    transform: translateY(-1px) scale(1.06);
   }
 }
+.gem-slot:active .gem:not(.stone) .gem-art {
+  transform: scale(0.92);
+  transition-duration: 100ms;
+}
+.gem-slot.selected .gem {
+  background: color-mix(in srgb, currentColor 16%, var(--gem-cell));
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+.gem-slot.selected .gem-art {
+  transform: translateY(-1px) scale(1.1);
+}
+.gem-slot:focus-visible .gem {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--accent);
+}
+.gem-slot.selected:focus-visible .gem {
+  box-shadow:
+    inset 0 0 0 2px currentColor,
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--accent);
+}
+.gem-slot.bad .gem {
+  animation: gem-shake 280ms var(--gem-in-out);
+}
+
+/* Abräumen: kurz aufleuchten, dann schrumpfen und ausblenden */
+.gem-slot.pop .gem {
+  animation: gem-clear 230ms var(--gem-out) forwards;
+}
+
+/* Bombe, Phase 1: Spannung. Die Bombe wächst, die Nachbarn ziehen sich leicht zusammen. */
+.gem-slot.charging .gem {
+  background: color-mix(in srgb, currentColor 30%, var(--gem-cell));
+}
+.gem-slot.charging .gem-art {
+  animation: bomb-charge 220ms var(--gem-in-out) forwards;
+}
+.gem-slot.braced:not(.charging) .gem-art {
+  transform: scale(0.9);
+  transition: transform 200ms var(--gem-out);
+}
+
+/* Eine neue Bombe entsteht: kurzer Impuls statt stillem Wechsel. */
+.gem-slot.forming .gem-art {
+  animation: bomb-form 300ms var(--gem-out);
+}
+
+/* Phase 2: Welle. Felder leuchten vom Zentrum nach aussen auf und verschwinden. */
+.gem-slot.blasted.pop .gem {
+  animation: gem-blast 380ms var(--gem-out) forwards;
+  animation-delay: calc(var(--wave) * 55ms);
+}
+
+/* Explosionsebene über dem Feld: verschiebt nichts, nur transform und opacity. */
+.gems-fx {
+  position: absolute;
+  inset: 4px;
+  pointer-events: none;
+}
+.blast {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / var(--n));
+  height: calc(100% / var(--n));
+}
+.blast.c0 { color: var(--gem-0); }
+.blast.c1 { color: var(--gem-1); }
+.blast.c2 { color: var(--gem-2); }
+.blast.c3 { color: var(--gem-3); }
+.blast.c4 { color: var(--gem-4); }
+.blast.c5 { color: var(--gem-5); }
+.blast-core,
+.blast-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.blast-core {
+  background: radial-gradient(circle, #fff 0 18%, color-mix(in srgb, currentColor 55%, #fff) 36%, color-mix(in srgb, currentColor 40%, transparent) 54%, transparent 70%);
+  animation: blast-core 480ms var(--gem-out) forwards;
+}
+.blast-ring {
+  border: 1.5px solid color-mix(in srgb, currentColor 80%, #fff);
+  animation: blast-ring 480ms var(--gem-out) forwards;
+}
+.blast-spark {
+  position: absolute;
+  left: 43%;
+  top: 43%;
+  width: 14%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, currentColor 62%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 40%, transparent);
+  animation: blast-spark 480ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
 .gems-combo {
   position: absolute;
   left: 50%;
@@ -1026,7 +1152,7 @@
   color: var(--bg);
   font-weight: 650;
   pointer-events: none;
-  animation: gem-combo 700ms var(--ease) both;
+  animation: gem-combo 700ms var(--gem-out) both;
 }
 .gems-question {
   display: flex;
@@ -1059,11 +1185,18 @@
 }
 .gem-mini {
   flex: none;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
 }
 .gem-mini .gem {
   animation: none;
+}
+.gem-mini .gem-badge {
+  right: -3px;
+  bottom: -3px;
+  padding: 0 2px;
+  font-size: 9px;
+  line-height: 1.35;
 }
 .gems-result {
   display: grid;
@@ -1086,9 +1219,20 @@
   font-size: 1.25rem;
   font-weight: 650;
 }
+
 @keyframes gem-in {
   from {
-    transform: translateY(-70%);
+    transform: translateY(-60%);
+    opacity: 0;
+  }
+}
+@keyframes gem-clear {
+  35% {
+    transform: scale(1.1);
+    filter: brightness(1.25);
+  }
+  to {
+    transform: scale(0.5);
     opacity: 0;
   }
 }
@@ -1096,22 +1240,133 @@
   25% { transform: translateX(-6%); }
   75% { transform: translateX(6%); }
 }
-@keyframes gem-glow {
-  50% { opacity: 0.45; }
+@keyframes bomb-spark {
+  from {
+    transform: scale(0.82);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+@keyframes bomb-charge {
+  to {
+    transform: scale(1.16);
+    filter: var(--gem-drop) brightness(1.2);
+  }
+}
+@keyframes bomb-form {
+  from {
+    transform: scale(0.7);
+    filter: var(--gem-drop) brightness(1.5);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+}
+@keyframes gem-blast {
+  30% {
+    transform: scale(1.14);
+    filter: brightness(1.6);
+  }
+  to {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+/* Bewegung und Ausblenden getrennt: erst schnell nach aussen, dann ruhig verglühen. */
+@keyframes blast-core {
+  from {
+    transform: scale(0.35);
+    opacity: 1;
+  }
+  45% {
+    transform: scale(2.4);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(2.9);
+    opacity: 0;
+  }
+}
+@keyframes blast-ring {
+  from {
+    transform: scale(0.5);
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(3.3);
+    opacity: 0;
+  }
+}
+@keyframes blast-spark {
+  from {
+    transform: rotate(var(--a)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(calc(var(--d) * 1050%)) scale(0.4);
+    opacity: 0;
+  }
 }
 @keyframes gem-combo {
-  from { opacity: 0; scale: 0.8; }
-  20% { opacity: 1; scale: 1.05; }
+  from { opacity: 0; scale: 0.9; }
+  20% { opacity: 1; scale: 1.04; }
   80% { opacity: 1; scale: 1; }
   to { opacity: 0; scale: 1; }
 }
-.gems-board.reduced .gem-slot,
-:root[data-motion='reduced'] .gem-slot {
+@keyframes gems-bump {
+  from { transform: scale(1.1); }
+}
+
+/* Weniger Bewegung: keine Partikel, keine Skalierung, nur ein kurzer Farbimpuls. */
+@keyframes gem-flash {
+  30% {
+    background-color: color-mix(in srgb, currentColor 50%, var(--gem-cell));
+  }
+  to {
+    background-color: color-mix(in srgb, currentColor 50%, var(--gem-cell));
+    opacity: 0;
+  }
+}
+@keyframes gem-fade {
+  to {
+    opacity: 0;
+  }
+}
+.gems-board.reduced .gem-slot {
   transition-duration: 60ms;
 }
 .gems-board.reduced .gem,
-:root[data-motion='reduced'] .gem,
+.gems-board.reduced .bomb-spark,
+.gems-board.reduced .gem-slot.charging .gem-art,
+.gems-board.reduced .gem-slot.forming .gem-art,
 :root[data-motion='reduced'] .gems-combo,
-.gems-board.reduced .gem.bomb .gem-mark {
+:root[data-motion='reduced'] .gems-score {
   animation: none;
+}
+.gems-board.reduced .gem-slot.pop .gem {
+  animation: gem-fade 120ms ease forwards;
+}
+.gems-board.reduced .gem-slot.blasted.pop .gem {
+  animation: gem-flash 240ms ease forwards;
+}
+.gems-board.reduced .gem-slot.braced .gem-art,
+.gems-board.reduced .gem-slot .gem-art {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gem,
+  .bomb-spark,
+  .gems-score,
+  .gems-combo {
+    animation: none;
+  }
 }

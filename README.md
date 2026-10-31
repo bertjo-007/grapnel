@@ -73,6 +73,7 @@ node e2e/misc.mjs      # Editor, Export, Sprache, alles löschen
 node e2e/perf.mjs      # 5000 Karten
 node e2e/seed.mjs      # Startsets im Dev-Server, Seitenbeschriftung
 node e2e/gems.mjs      # Juwelen: Maus, Wischen, Tastatur, Fragen, Spielende, Handy
+node e2e/gems-fx.mjs   # Juwelen-Symbole, Bombe Bild für Bild, reduzierte Bewegung
 node e2e/flash-peek.mjs  # Karteikarten zeigen beim Weiterblättern keine Lösung
 npm run build:pages && npm run preview:pages   # dann:
 node e2e/pages.mjs     # Pages-Build: Startsets, kein Sync, Unterseiten, offline

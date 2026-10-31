@@ -47,6 +47,8 @@ export interface GemsStep {
   cleared: number[];
   /** IDs, die in diesem Schritt zur Bombe wurden. */
   bombs: number[];
+  /** Felder (Indizes vor dem Abräumen), auf denen eine Bombe gezündet hat. */
+  blasts: number[];
   /** Feld nach Nachrutschen und Auffüllen. */
   board: Board;
   combo: number;
@@ -246,7 +248,7 @@ function resolve(s: GemsState, board: Board, swap: [number, number] | null, rng:
           if (board[i].kind === 'bomb') queue.push(i);
         }
     }
-    const step: GemsStep = { cleared: [], bombs: [...keep.values()].map((g) => g.id), board: [], combo, points: 0, questions: 0, poison: 0, stones: 0 };
+    const step: GemsStep = { cleared: [], bombs: [...keep.values()].map((g) => g.id), blasts: [...blown], board: [], combo, points: 0, questions: 0, poison: 0, stones: 0 };
     for (const i of clear) {
       const g = board[i];
       step.cleared.push(g.id);
@@ -281,7 +283,7 @@ function resolve(s: GemsState, board: Board, swap: [number, number] | null, rng:
   }
   if (!findMove(board, s.size)) {
     board = reshuffle(s, board, rng);
-    steps.push({ cleared: [], bombs: [], board, combo, points: 0, questions: 0, poison: 0, stones: 0, shuffled: true });
+    steps.push({ cleared: [], bombs: [], blasts: [], board, combo, points: 0, questions: 0, poison: 0, stones: 0, shuffled: true });
   }
   s.bestCombo = Math.max(s.bestCombo, combo);
   return { board, steps };

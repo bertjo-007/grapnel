@@ -164,7 +164,7 @@ g = await game();
   const key = b === a + 1 ? 'ArrowRight' : b === a - 1 ? 'ArrowLeft' : b > a ? 'ArrowDown' : 'ArrowUp';
   await page.keyboard.press(key);
   await settle();
-  console.log('Tastatur: Züge', g.moves, '→', (await game()).moves, '| Fokus im Feld:', await page.evaluate(() => !!document.activeElement?.closest('.gems-board')));
+  console.log('Tastatur: Züge', g.moves, '→', (await game()).moves, '| Fokus im Feld:', await page.evaluate(() => !!document.activeElement?.closest('.gems-board')), '| Frage offen:', !!(await page.$('.gems-question')), '| Fokus in Frage:', await page.evaluate(() => !!document.activeElement?.closest('.gems-question')));
   await answerQuestions(false);
 }
 

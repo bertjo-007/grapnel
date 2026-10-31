@@ -114,6 +114,7 @@ describe('Juwelen: besondere Juwelen', () => {
     const res = gemsSwap(s, deck, 10, 14); // Zeile 2: 0 B [2↔0] → Reihe mit der Bombe in der Mitte
     if (!res.ok) throw new Error('kein Zug');
     const first = res.steps[0];
+    expect(first.blasts).toEqual([9]);
     expect(first.stones).toBe(2);
     expect(first.points).toBeGreaterThanOrEqual(2 * STONE_BONUS);
     expect(first.cleared.length).toBeGreaterThanOrEqual(9);
