@@ -1,4 +1,4 @@
-import { Archive, Brain, Cards, Exam, PencilSimpleLine, PuzzlePiece, Shuffle, Stack } from '@phosphor-icons/react';
+import { Archive, Brain, Cards, Diamond, Exam, PencilSimpleLine, PuzzlePiece, Shuffle, Stack } from '@phosphor-icons/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
@@ -98,6 +98,7 @@ export const MODES: { mode: StudyMode; icon: typeof Cards }[] = [
   { mode: 'test', icon: Exam },
   { mode: 'match', icon: PuzzlePiece },
   { mode: 'mixed', icon: Shuffle },
+  { mode: 'gems', icon: Diamond },
 ];
 
 export function ModeGrid({ scope, disabled }: { scope: string; disabled?: boolean }) {

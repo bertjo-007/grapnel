@@ -3,6 +3,7 @@ import { createSession } from '../../core/db/repo';
 import type { Settings } from '../../core/settings';
 import { Deck, itemKey, type ItemRef } from '../../core/session/deck';
 import { createFlash } from '../../core/session/flash';
+import { createGems, gemsProgress } from '../../core/session/gems';
 import { createLearn, learnProgress } from '../../core/session/learn';
 import { createMatch } from '../../core/session/match';
 import { createRounds } from '../../core/session/rounds';
@@ -22,6 +23,7 @@ export interface StartOptions {
   matchTimer?: boolean;
   matchPerRound?: number;
   flashRating?: 'binary' | 'four';
+  gemsQuestion?: 'mc' | 'write';
 }
 
 export async function loadDeck(setIds: string[]): Promise<Deck> {
@@ -64,6 +66,12 @@ export async function startSession(o: StartOptions): Promise<string> {
     case 'match':
       state = createMatch(deck, o.refs, o.matchPerRound ?? 6, o.matchTimer ?? true, seed);
       break;
+    case 'gems': {
+      const s = createGems(deck, keys, { questionType: o.gemsQuestion ?? 'mc', seed });
+      total = gemsProgress(s).total;
+      state = s;
+      break;
+    }
   }
   // Eine neue Sitzung ersetzt eine liegengelassene derselben Art (gleicher Modus, gleiche Sets).
   const same = await db.sessions.where('status').equals('active').filter((x) => x.mode === o.mode && x.setIds.join() === o.setIds.join()).primaryKeys();

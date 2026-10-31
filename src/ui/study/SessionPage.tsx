@@ -13,6 +13,7 @@ import { ShortcutsDialog } from '../shell/Shell';
 import { useSettings } from '../state';
 import { StudyProvider } from './common';
 import { FlashRunner } from './FlashRunner';
+import { GemsRunner } from './GemsRunner';
 import { LearnRunner } from './LearnRunner';
 import { MatchRunner } from './MatchRunner';
 import { RoundsRunner } from './RoundsRunner';
@@ -197,6 +198,7 @@ export function SessionPage() {
         {kind === 'rounds' && <RoundsRunner session={session} />}
         {kind === 'test' && <TestRunner session={session} />}
         {kind === 'match' && <MatchRunner session={session} />}
+        {kind === 'gems' && <GemsRunner session={session} />}
       </StudyFrame>
     </StudyProvider>
   );

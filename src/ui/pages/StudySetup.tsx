@@ -6,6 +6,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { looseKey } from '../../core/answer/normalize';
 import { db } from '../../core/db/db';
 import { isAutoDifficult, isDueNow, lastWasWrong } from '../../core/srs/status';
+import { MIN_CARDS } from '../../core/session/gems';
 import { countSelections, nextDue, selectItems, type SelectionKind } from '../../core/session/selection';
 import type { TestQType } from '../../core/session/test';
 import type { Card, CardState, DirectionChoice, StudyMode } from '../../core/types';
@@ -18,7 +19,7 @@ import { useSettings, useToast } from '../state';
 import { startSession } from '../study/start';
 import { NotFound } from './NotFound';
 
-const MODES: StudyMode[] = ['flashcards', 'learn', 'write', 'mc', 'test', 'match', 'mixed'];
+const MODES: StudyMode[] = ['flashcards', 'learn', 'write', 'mc', 'test', 'match', 'mixed', 'gems'];
 const KINDS: SelectionKind[] = ['all', 'due', 'new', 'difficult', 'wrong', 'flagged', 'random', 'manual'];
 const TEST_TYPES: TestQType[] = ['write', 'mc', 'match', 'truefalse'];
 
@@ -56,6 +57,7 @@ export function StudySetup() {
   const [timeLimit, setTimeLimit] = useState<number | null>(null);
   const [showAnswers, setShowAnswers] = useState<'immediate' | 'end'>('end');
   const [matchTimer, setMatchTimer] = useState(true);
+  const [gemsQuestion, setGemsQuestion] = useState<'mc' | 'write'>('mc');
   const [seed] = useState(randomSeed);
   const [busy, setBusy] = useState(false);
 
@@ -102,9 +104,13 @@ export function StudySetup() {
   const frontLang = set?.frontLang ?? data.sets[0]?.frontLang ?? 'other';
   const backLang = set?.backLang ?? data.sets[0]?.backLang ?? 'other';
   const sessionCount = mode === 'learn' || mode === 'mixed' ? breakdown.total : mode === 'test' ? Math.min(testCount, refs.length) : refs.length;
-  const empty = sessionCount === 0;
+  // Juwelen braucht genug verschiedene Karten für Fragen mit Auswahl (wie bei Quizlet: mindestens sechs).
+  const gemsCards = new Set(refs.map((r) => r.c)).size;
+  const tooFewForGems = mode === 'gems' && sessionCount > 0 && gemsCards < MIN_CARDS;
+  const empty = sessionCount === 0 || tooFewForGems;
 
   const emptyText = (): string => {
+    if (tooFewForGems) return t('gems.tooFew', { n: MIN_CARDS, have: gemsCards });
     if (kind === 'due') {
       const nd = nextDue(cards, states, direction);
       return nd ? `${t('sel.empty.due')} ${t('sel.empty.dueNext', { when: relTime(nd) })}` : t('sel.empty.due');
@@ -133,6 +139,7 @@ export function StudySetup() {
         test: { count: testCount, types: testTypes, shuffle: shuffleOn, timeLimitMin: timeLimit, showAnswers },
         matchTimer,
         matchPerRound: isDesktop ? 6 : 5,
+        gemsQuestion,
       });
       navigate(`/session/${id}`, { replace: true });
     } catch {
@@ -304,6 +311,23 @@ export function StudySetup() {
       {mode === 'match' && (
         <section className="panel panel-pad">
           <Switch checked={matchTimer} onChange={setMatchTimer} label={t('match.timer')} />
+        </section>
+      )}
+
+      {mode === 'gems' && (
+        <section className="panel panel-pad stack">
+          <p className="small text-2">{t('gems.setup.text')}</p>
+          <Field label={t('gems.questionType')}>
+            <Segmented
+              label={t('gems.questionType')}
+              value={gemsQuestion}
+              onChange={setGemsQuestion}
+              options={[
+                { value: 'mc', label: t('mode.mc') },
+                { value: 'write', label: t('mode.write') },
+              ]}
+            />
+          </Field>
         </section>
       )}
 

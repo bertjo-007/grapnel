@@ -2,7 +2,7 @@
 
 Lernplattform für Vokabeln und alles andere, das man auswendig lernen muss: Lernsets,
 Karteikarten, Lernen mit intelligenter Wiederholung, Schreiben, Multiple Choice, Test,
-Zuordnen und Gemischt. Läuft im Browser und offline, ohne Konto.
+Zuordnen, Gemischt und das Spiel Juwelen. Läuft im Browser und offline, ohne Konto.
 
 **App öffnen: <https://bertjo-007.github.io/grapnel/>**
 
@@ -72,6 +72,8 @@ node e2e/sync.mjs      # zwei Geräte über den lokalen Worker
 node e2e/misc.mjs      # Editor, Export, Sprache, alles löschen
 node e2e/perf.mjs      # 5000 Karten
 node e2e/seed.mjs      # Startsets im Dev-Server, Seitenbeschriftung
+node e2e/gems.mjs      # Juwelen: Maus, Wischen, Tastatur, Fragen, Spielende, Handy
+node e2e/flash-peek.mjs  # Karteikarten zeigen beim Weiterblättern keine Lösung
 npm run build:pages && npm run preview:pages   # dann:
 node e2e/pages.mjs     # Pages-Build: Startsets, kein Sync, Unterseiten, offline
 GRAPNEL_URL=https://bertjo-007.github.io/grapnel node e2e/pages.mjs   # die echte Seite

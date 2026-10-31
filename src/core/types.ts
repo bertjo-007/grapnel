@@ -47,7 +47,7 @@ export interface Card {
   updatedAt: number;
 }
 
-export type StudyMode = 'flashcards' | 'learn' | 'write' | 'mc' | 'test' | 'match' | 'mixed';
+export type StudyMode = 'flashcards' | 'learn' | 'write' | 'mc' | 'test' | 'match' | 'mixed' | 'gems';
 export type TaskType = 'flashcard' | 'write' | 'mc' | 'truefalse' | 'match';
 
 /** correct = richtig, almost = mit Toleranz akzeptiert, wrong = falsch, skipped = unbeantwortet. */
