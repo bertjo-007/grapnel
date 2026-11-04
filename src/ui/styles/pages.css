@@ -139,18 +139,21 @@
   align-items: center;
   gap: var(--s-4);
   padding: var(--s-6);
-  border: none;
+  border: 1px solid rgb(125 179 255 / 0.28);
   border-radius: var(--r-lg);
-  background: var(--accent);
-  color: var(--on-accent);
+  background:
+    radial-gradient(420px 200px at 100% 0%, rgb(0 166 255 / 0.28), transparent 70%),
+    radial-gradient(300px 160px at 0% 100%, rgb(18 59 138 / 0.6), transparent 70%),
+    var(--grad-brand);
+  color: #f8fafc;
   text-align: left;
-  box-shadow: var(--shadow-md);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 18px 40px -18px rgb(37 99 235 / 0.7);
   transition:
     transform var(--t-med) var(--ease-out),
     box-shadow var(--t-med) var(--ease);
 }
 .hero-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 22px 48px -16px rgb(37 99 235 / 0.85);
 }
 .hero-card:active {
   transform: scale(0.99);
@@ -168,7 +171,9 @@
   width: 48px;
   height: 48px;
   border-radius: var(--r-md);
-  background: color-mix(in srgb, var(--on-accent) 16%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16);
 }
 .hero-text {
   grid-area: text;
@@ -194,10 +199,10 @@
 }
 .hero-progress .progress {
   flex: 1;
-  background: color-mix(in srgb, var(--on-accent) 22%, transparent);
+  background: rgb(255 255 255 / 0.18);
 }
 .hero-progress .progress > span {
-  background: var(--on-accent);
+  background: linear-gradient(90deg, #f8fafc, #9fd7ff);
 }
 .hero-cta {
   grid-area: cta;
@@ -208,15 +213,12 @@
   min-height: 44px;
   padding: 0 var(--s-5);
   border-radius: var(--r-md);
-  background: var(--on-accent);
-  color: var(--accent-text);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  background: rgb(255 255 255 / 0.14);
+  color: #f8fafc;
   font-weight: 600;
   white-space: nowrap;
-}
-:root[data-theme='dark'] .hero-cta {
-  color: var(--on-accent);
-  background: color-mix(in srgb, var(--on-accent) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--on-accent) 30%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2);
 }
 
 .today-card {
@@ -272,18 +274,24 @@
   padding: var(--s-4) var(--s-5) var(--s-5);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  background: var(--surface);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 100%, #fff 2%), var(--surface));
   color: var(--text);
   text-decoration: none;
+  box-shadow: var(--edge), var(--shadow-sm);
   transition:
     border-color var(--t-fast) var(--ease),
     box-shadow var(--t-med) var(--ease),
     transform var(--t-med) var(--ease-out);
 }
 .set-tile:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: var(--edge), var(--shadow-md), 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
   text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .set-tile:hover {
+    transform: translateY(-2px);
+  }
 }
 .set-tile:active {
   transform: scale(0.99);
@@ -380,21 +388,24 @@
   background: var(--surface);
   color: var(--text);
   text-decoration: none;
+  box-shadow: var(--edge);
   transition:
     border-color var(--t-fast) var(--ease),
     background var(--t-fast) var(--ease),
+    box-shadow var(--t-med) var(--ease),
     transform var(--t-med) var(--ease-out);
 }
 .mode-tile:hover {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  background: color-mix(in srgb, var(--surface-2) 60%, var(--surface));
   text-decoration: none;
 }
 .mode-tile:active {
   transform: scale(0.985);
 }
 .mode-tile.primary {
-  background: var(--accent-soft);
-  border-color: transparent;
+  background: radial-gradient(260px 120px at 0% 0%, rgb(37 99 235 / 0.22), transparent 70%), var(--surface);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 .mode-icon {
   display: grid;
@@ -403,12 +414,19 @@
   width: 40px;
   height: 40px;
   border-radius: var(--r-md);
-  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-2);
   color: var(--accent-text);
+  transition: transform var(--t-med) var(--ease-out);
+}
+.mode-tile:hover .mode-icon {
+  transform: scale(1.05);
 }
 .mode-tile.primary .mode-icon {
-  background: var(--accent);
+  border-color: transparent;
+  background: var(--grad-accent);
   color: var(--on-accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--glow);
 }
 .mode-text {
   display: flex;
@@ -647,6 +665,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   background: var(--surface);
+  box-shadow: var(--edge);
   transition: border-color var(--t-fast) var(--ease);
 }
 .editor-row:focus-within {
@@ -772,9 +791,9 @@
   align-items: center;
   gap: var(--s-3);
   padding: var(--s-10) var(--s-6);
-  border: 2px dashed var(--border-strong);
+  border: 2px dashed color-mix(in srgb, var(--accent) 38%, var(--border-strong));
   border-radius: var(--r-lg);
-  background: var(--surface);
+  background: radial-gradient(420px 200px at 50% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%), var(--surface);
   color: var(--text-2);
   text-align: center;
   transition:
@@ -879,10 +898,12 @@
   justify-content: space-between;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-lg);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--edge), var(--shadow-lg);
 }
 @media (min-width: 900px) {
   .commit-bar {
@@ -927,10 +948,12 @@
   justify-content: space-between;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-lg);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--edge), var(--shadow-lg);
 }
 @media (min-width: 900px) {
   .start-bar {
@@ -994,7 +1017,8 @@
   border-radius: 3px;
   background: var(--surface-3);
 }
-.hm.empty {
+/* Tage vor Beginn der Zeitachse (nicht «.empty»: das ist der Baustein für leere Zustände). */
+.hm.blank {
   background: transparent;
 }
 .hm.l1 {
@@ -1008,6 +1032,7 @@
 }
 .hm.l4 {
   background: var(--accent);
+  box-shadow: 0 0 6px rgb(37 99 235 / 0.6);
 }
 .heatmap-legend {
   display: flex;
@@ -1041,12 +1066,12 @@
   width: 100%;
   min-height: 0;
   border-radius: 4px 4px 1px 1px;
-  background: var(--accent);
+  background: linear-gradient(180deg, var(--accent-hover), var(--accent));
   opacity: 0.85;
 }
 .bar.first {
   opacity: 1;
-  background: var(--accent-hover);
+  background: linear-gradient(180deg, var(--electric), var(--accent));
 }
 .bar-value {
   font-size: 10px;
@@ -1080,7 +1105,7 @@
 }
 .line {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--accent-text);
   stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -1092,7 +1117,7 @@
   margin: -4px 0 0 -4px;
   border-radius: 50%;
   background: var(--surface);
-  border: 2px solid var(--accent);
+  border: 2px solid var(--accent-text);
 }
 .line-label {
   position: absolute;

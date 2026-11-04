@@ -1,9 +1,10 @@
 /* ---------- Knöpfe ---------- */
 
 .btn {
-  --btn-bg: var(--surface);
+  --btn-bg: var(--surface-2);
   --btn-fg: var(--text);
   --btn-border: var(--border-strong);
+  --btn-shadow: var(--edge);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -14,6 +15,7 @@
   border: 1px solid var(--btn-border);
   background: var(--btn-bg);
   color: var(--btn-fg);
+  box-shadow: var(--btn-shadow);
   font-weight: 560;
   font-size: var(--fs-md);
   line-height: 1;
@@ -27,10 +29,10 @@
     box-shadow var(--t-fast) var(--ease);
 }
 .btn:hover {
-  --btn-bg: var(--surface-2);
+  --btn-bg: var(--surface-3);
 }
 .btn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.99);
+  transform: scale(0.98);
 }
 .btn:disabled {
   opacity: 0.5;
@@ -41,18 +43,21 @@
 }
 
 .btn-primary {
-  --btn-bg: var(--accent);
+  --btn-bg: var(--grad-accent);
   --btn-fg: var(--on-accent);
-  --btn-border: transparent;
+  --btn-border: color-mix(in srgb, var(--accent) 70%, #fff 10%);
+  --btn-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--shadow-sm);
 }
 .btn-primary:hover {
-  --btn-bg: var(--accent-hover);
+  --btn-bg: linear-gradient(180deg, #3b7bf5 0%, #2d6cf0 50%, #2560e2 100%);
+  --btn-shadow: inset 0 1px 0 rgb(255 255 255 / 0.24), var(--glow);
 }
 
 .btn-soft {
   --btn-bg: var(--accent-soft);
   --btn-fg: var(--accent-text);
-  --btn-border: transparent;
+  --btn-border: color-mix(in srgb, var(--accent) 28%, transparent);
+  --btn-shadow: none;
 }
 .btn-soft:hover {
   --btn-bg: color-mix(in srgb, var(--accent-soft) 70%, var(--accent) 12%);
@@ -62,6 +67,7 @@
   --btn-bg: transparent;
   --btn-border: transparent;
   --btn-fg: var(--text-2);
+  --btn-shadow: none;
 }
 .btn-ghost:hover {
   --btn-bg: var(--surface-2);
@@ -72,6 +78,10 @@
   --btn-bg: var(--danger);
   --btn-fg: #fff;
   --btn-border: transparent;
+  --btn-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+:root[data-theme='dark'] .btn-danger {
+  --btn-bg: #c43c33;
 }
 .btn-danger:hover {
   --btn-bg: color-mix(in srgb, var(--danger) 88%, #000);
@@ -128,7 +138,7 @@
   padding: 10px var(--s-3);
   border-radius: var(--r-md);
   border: 1px solid var(--border-strong);
-  background: var(--surface);
+  background: var(--field);
   color: var(--text);
   font-size: 16px; /* iOS zoomt bei kleineren Schriften ins Feld */
   transition:
@@ -139,12 +149,23 @@
 .textarea::placeholder {
   color: var(--text-3);
 }
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: color-mix(in srgb, var(--border-strong) 70%, var(--text-3));
+}
 .input:focus,
 .textarea:focus,
 .select:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--electric);
   box-shadow: var(--focus);
+}
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 .textarea {
   resize: vertical;
@@ -192,24 +213,29 @@
   width: 46px;
   height: 28px;
   border-radius: var(--r-full);
-  border: none;
+  border: 1px solid var(--border-strong);
   background: var(--surface-3);
-  transition: background var(--t-med) var(--ease);
+  transition:
+    background var(--t-med) var(--ease),
+    border-color var(--t-med) var(--ease),
+    box-shadow var(--t-med) var(--ease);
 }
 .switch::after {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
+  top: 2px;
+  left: 2px;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #fff;
+  background: #f8fafc;
   box-shadow: var(--shadow-sm);
   transition: transform var(--t-med) var(--ease-out);
 }
 .switch[aria-checked='true'] {
   background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 70%, #fff 12%);
+  box-shadow: 0 0 14px -4px rgb(37 99 235 / 0.7);
 }
 .switch[aria-checked='true']::after {
   transform: translateX(18px);
@@ -222,7 +248,8 @@
   padding: 3px;
   gap: 2px;
   border-radius: var(--r-md);
-  background: var(--surface-2);
+  border: 1px solid var(--border);
+  background: var(--bg-2);
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
@@ -242,10 +269,13 @@
     background var(--t-fast) var(--ease),
     color var(--t-fast) var(--ease);
 }
-.seg button[aria-pressed='true'] {
-  background: var(--surface);
+.seg button:hover {
   color: var(--text);
-  box-shadow: var(--shadow-sm);
+}
+.seg button[aria-pressed='true'] {
+  background: var(--surface-3);
+  color: var(--text);
+  box-shadow: var(--edge), var(--shadow-sm);
 }
 
 .chip {
@@ -260,6 +290,7 @@
   color: var(--text-2);
   font-size: var(--fs-sm);
   font-weight: 520;
+  cursor: pointer;
   white-space: nowrap;
   transition:
     background var(--t-fast) var(--ease),
@@ -268,10 +299,14 @@
 }
 .chip:hover {
   border-color: var(--text-3);
+  color: var(--text);
+}
+.chip:active {
+  transform: scale(0.97);
 }
 .chip[aria-pressed='true'] {
   background: var(--accent-soft);
-  border-color: transparent;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
   color: var(--accent-text);
 }
 .chip .count {
@@ -320,6 +355,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  box-shadow: var(--edge), var(--shadow-sm);
 }
 .panel-pad {
   padding: var(--s-5);
@@ -361,7 +397,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--electric));
   transition: width var(--t-slow) var(--ease-out);
 }
 
@@ -386,18 +422,27 @@
   align-items: flex-start;
   gap: var(--s-3);
   padding: var(--s-8) var(--s-6);
-  border: 1px dashed var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  background: var(--surface);
+  background: radial-gradient(520px 220px at 0% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%), var(--surface);
+  box-shadow: var(--edge);
 }
 .empty-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: var(--r-md);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   background: var(--accent-soft);
   color: var(--accent-text);
+}
+.empty-icon.is-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border: none;
+  background: none;
 }
 .empty h3 {
   font-size: var(--fs-lg);
@@ -413,11 +458,11 @@ dialog.dialog {
   width: min(520px, calc(100vw - 32px));
   max-height: min(86dvh, 760px);
   padding: 0;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-lg);
   background: var(--surface);
   color: var(--text);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--edge), var(--shadow-lg);
   overflow: hidden;
 }
 dialog.dialog[open] {
@@ -427,6 +472,8 @@ dialog.dialog[open] {
 }
 dialog.dialog::backdrop {
   background: var(--scrim);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   animation: fade-in var(--t-med) var(--ease);
 }
 dialog.dialog.wide {
@@ -509,9 +556,9 @@ dialog.dialog.wide {
   min-width: 220px;
   padding: 6px;
   border-radius: var(--r-lg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   background: var(--surface);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--edge), var(--shadow-lg);
   animation: dialog-in var(--t-fast) var(--ease-out);
 }
 .menu.up {
@@ -573,16 +620,22 @@ dialog.dialog.wide {
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
   border-radius: var(--r-md);
-  background: var(--text);
-  color: var(--bg);
+  border: 1px solid var(--toast-border, transparent);
+  background: var(--toast-bg, var(--text));
+  color: var(--toast-fg, var(--bg));
   box-shadow: var(--shadow-lg);
   font-size: var(--fs-sm);
   pointer-events: auto;
   animation: dialog-in var(--t-med) var(--ease-out);
 }
 .toast .btn {
-  --btn-fg: var(--bg);
+  --btn-fg: var(--toast-fg, var(--bg));
   min-height: 32px;
+}
+:root[data-theme='dark'] .toasts {
+  --toast-bg: #1c2a44;
+  --toast-fg: var(--text);
+  --toast-border: var(--border-strong);
 }
 .toast.error {
   background: var(--danger);
@@ -601,7 +654,7 @@ dialog.dialog.wide {
   border-radius: 6px;
   border: 1px solid var(--border-strong);
   border-bottom-width: 2px;
-  background: var(--surface);
+  background: var(--field);
   color: var(--text-2);
   font-family: var(--mono);
   font-size: 11px;

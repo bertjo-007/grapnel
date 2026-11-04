@@ -1,32 +1,31 @@
 /**
- * Erzeugt alle App-Symbole aus einem SVG (npm run icons).
- * Motiv: der Anker aus Phosphor (anchor-simple, bold) auf Kobaltblau.
- * Ein Grapnel ist ein Enterhaken: etwas, das hält. Das Glyph stammt aus der
- * Icon-Bibliothek der App, damit Logo und Oberfläche dieselbe Linie haben.
+ * Erzeugt alle App-Symbole und das Logo in der App aus Joshuas Grapnel-Logo (npm run icons).
+ * Vorlage: scripts/brand/grapnel-logo.png, die Kachel mit dem silbernen G-Anker auf Blau,
+ * zugeschnitten aus seinem Logo-Bild (701 × 701). Die Ecken ausserhalb der Kachel werden
+ * abgerundet weggeschnitten; wo ein Hintergrund nötig ist (iOS, maskierbar), ist er Navy.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { Resvg } from '@resvg/resvg-js';
 
-const raw = readFileSync('node_modules/@phosphor-icons/core/assets/bold/anchor-simple-bold.svg', 'utf8');
-const path = raw.match(/<path d="([^"]+)"/)[1];
+const SRC = 701;
+const NAVY = '#080D18';
+const logo = `data:image/png;base64,${readFileSync('scripts/brand/grapnel-logo.png').toString('base64')}`;
 
-const mark = (scale) => {
-  // Glyph im 256er-Raster, zentriert und skaliert auf eine 1024er-Fläche.
-  const s = (1024 * scale) / 256;
-  const o = (1024 - 256 * s) / 2;
-  return `<g transform="translate(${o} ${o}) scale(${s})"><path d="${path}" fill="#f4f6fb"/></g>`;
-};
-
-const svg = (scale) => `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+/** Kachel mit abgerundeten Ecken; scale < 1 lässt Rand (für maskierbare Symbole). */
+const svg = ({ scale = 1, background = null, inset = 4, radius = 0.175 } = {}) => {
+  const size = SRC * scale;
+  const o = (SRC - size) / 2;
+  const r = (SRC - 2 * inset) * radius;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SRC}" height="${SRC}" viewBox="0 0 ${SRC} ${SRC}">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a66dc"/>
-      <stop offset="1" stop-color="#2649b4"/>
-    </linearGradient>
+    <clipPath id="tile"><rect x="${inset}" y="${inset}" width="${SRC - 2 * inset}" height="${SRC - 2 * inset}" rx="${r}"/></clipPath>
   </defs>
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  ${mark(scale)}
+  ${background ? `<rect width="${SRC}" height="${SRC}" fill="${background}"/>` : ''}
+  <g transform="translate(${o} ${o}) scale(${scale})">
+    <image href="${logo}" width="${SRC}" height="${SRC}" clip-path="url(#tile)"/>
+  </g>
 </svg>`;
+};
 
 const render = (source, size, file) => {
   const png = new Resvg(source, { fitTo: { mode: 'width', value: size } }).render().asPng();
@@ -35,16 +34,13 @@ const render = (source, size, file) => {
 };
 
 mkdirSync('public/icons', { recursive: true });
-// iOS rundet selbst ab – volle Fläche ohne eigene Ecken.
-render(svg(0.6), 180, 'public/apple-touch-icon.png');
-render(svg(0.6), 192, 'public/icons/icon-192.png');
-render(svg(0.6), 512, 'public/icons/icon-512.png');
-// Maskierbar: Motiv innerhalb der sicheren Zone (80 %).
-render(svg(0.46), 512, 'public/icons/maskable-512.png');
-
-const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="56" fill="#2f5bd3"/>
-  <g transform="translate(38 38) scale(0.703)"><path d="${path}" fill="#f4f6fb"/></g>
-</svg>`;
-writeFileSync('public/favicon.svg', favicon);
-console.log('public/favicon.svg');
+mkdirSync('src/ui/assets', { recursive: true });
+// iOS rundet selbst ab und füllt Transparenz schwarz: darum voller Navy-Hintergrund.
+render(svg({ background: NAVY, inset: 0, radius: 0 }), 180, 'public/apple-touch-icon.png');
+render(svg(), 192, 'public/icons/icon-192.png');
+render(svg(), 512, 'public/icons/icon-512.png');
+// Maskierbar: Kachel innerhalb der sicheren Zone (80 %), Rest Navy.
+render(svg({ scale: 0.8, background: NAVY }), 512, 'public/icons/maskable-512.png');
+render(svg(), 64, 'public/favicon.png');
+// In der App: Seitenleiste, Ladebild, leere Zustände (höchstens etwa 120 px gross, also 3×).
+render(svg(), 384, 'src/ui/assets/grapnel-logo.png');

@@ -8,7 +8,8 @@ export const BASE = process.env.GRAPNEL_URL ?? 'http://127.0.0.1:5175';
 export const OUT = 'e2e/out';
 mkdirSync(OUT, { recursive: true });
 
-const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+// Edge ist Standard; mit GRAPNEL_BROWSER lässt sich ein anderer Chromium-Browser nehmen.
+const EDGE = process.env.GRAPNEL_BROWSER ?? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 
 export async function launch() {
   return puppeteer.launch({

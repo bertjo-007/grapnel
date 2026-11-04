@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: Settings = {
   name: '',
   uiLang: 'de',
   nativeLang: 'de',
-  theme: 'system',
+  theme: 'dark',
   reduceMotion: false,
   showShortcutHints: true,
   defaultDirection: 'f2b',

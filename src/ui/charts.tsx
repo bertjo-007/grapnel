@@ -27,7 +27,7 @@ export function Heatmap({ days }: { days: DayActivity[] }) {
       <div className="heatmap" role="img" aria-label={`${t('stats.activity')}: ${t('count.answers', { n: total })}`}>
         {weeks.map((w, i) => (
           <div key={i} className="heatmap-week">
-            {w.map((d, j) => (d ? <span key={j} className={`hm l${level(d.answers)}`} title={t('stats.day', { day: dayLabel(d.day, locale), n: d.answers })} /> : <span key={j} className="hm empty" />))}
+            {w.map((d, j) => (d ? <span key={j} className={`hm l${level(d.answers)}`} title={t('stats.day', { day: dayLabel(d.day, locale), n: d.answers })} /> : <span key={j} className="hm blank" />))}
           </div>
         ))}
       </div>

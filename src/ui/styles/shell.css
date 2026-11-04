@@ -14,27 +14,36 @@
   gap: var(--s-6);
   padding: var(--s-5) var(--s-3) var(--s-4);
   border-right: 1px solid var(--border);
-  background: var(--bg);
+  background:
+    radial-gradient(420px 260px at 0% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--bg-2), color-mix(in srgb, var(--bg-2) 60%, var(--bg)));
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 var(--s-3);
-  font-weight: 650;
-  font-size: var(--fs-lg);
-  letter-spacing: -0.02em;
+  gap: 12px;
+  padding: 0 var(--s-2);
 }
 
 .logo {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--accent);
-  color: var(--on-accent);
+  flex: none;
+  display: block;
+  border-radius: 22%;
+  box-shadow: 0 6px 18px -6px rgb(37 99 235 / 0.55);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Wortmarke: Silber wie das Metall im Logo, dezent und nur hier. */
+.wordmark {
+  font-size: 19px;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, var(--text) 30%, var(--silver) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .side-nav {
@@ -44,30 +53,46 @@
 }
 
 .side-nav .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 var(--s-3);
+  border: 1px solid transparent;
   border-radius: var(--r-md);
   color: var(--text-2);
   font-weight: 540;
   text-decoration: none;
   transition:
     background var(--t-fast) var(--ease),
-    color var(--t-fast) var(--ease);
+    color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
 }
 .side-nav .nav-item:hover {
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
   color: var(--text);
+  text-decoration: none;
 }
 .side-nav .nav-item.active {
-  background: var(--surface);
+  background: linear-gradient(90deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 30%, transparent));
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
   color: var(--text);
-  box-shadow: var(--shadow-sm);
+}
+/* Leuchtende Kante links: zeigt, wo man ist. */
+.side-nav .nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--electric);
+  box-shadow: 0 0 10px rgb(0 166 255 / 0.7);
 }
 .side-nav .nav-item.active .nav-icon {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .nav-icon {
@@ -83,8 +108,9 @@
   height: 18px;
   padding: 0 5px;
   border-radius: var(--r-full);
-  background: var(--accent);
+  background: var(--grad-accent);
   color: var(--on-accent);
+  box-shadow: 0 2px 8px -2px rgb(37 99 235 / 0.7);
   font-size: 10.5px;
   font-weight: 700;
   line-height: 18px;
@@ -92,6 +118,7 @@
 }
 .side-nav .nav-badge {
   position: static;
+  order: 2;
   margin-left: auto;
 }
 .side-nav .nav-item {
@@ -133,9 +160,23 @@
   margin-right: auto;
 }
 
+/* Markenzeile oben auf dem Handy (auf dem Computer steht das Logo in der Seitenleiste). */
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--s-4);
+}
+.mobile-brand .wordmark {
+  font-size: 17px;
+}
+
 @media (min-width: 900px) {
   .sidebar {
     display: flex;
+  }
+  .mobile-brand {
+    display: none;
   }
   .main {
     margin-left: var(--sidebar-w);
@@ -159,9 +200,10 @@
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
   border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(180%) blur(16px);
-  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  background: color-mix(in srgb, var(--bg-2) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(18px);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  box-shadow: 0 -10px 30px -18px hsl(var(--shadow-color) / 0.9);
 }
 @media (prefers-reduced-transparency: reduce) {
   .tabbar {
@@ -170,6 +212,7 @@
   }
 }
 .tabbar .nav-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -185,6 +228,23 @@
 }
 .tabbar .nav-item.active {
   color: var(--accent-text);
+}
+.tabbar .nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 30%;
+  right: 30%;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--electric);
+  box-shadow: 0 0 10px rgb(0 166 255 / 0.7);
+}
+.tabbar .nav-item:active .nav-icon {
+  transform: scale(0.92);
+}
+.tabbar .nav-icon {
+  transition: transform var(--t-fast) var(--ease);
 }
 .tabbar .nav-label {
   max-width: 100%;
@@ -214,13 +274,17 @@
   gap: 4px;
   min-width: 0;
 }
-.page-title h1 {
+.page-title h1,
+.page-header > h1 {
   font-size: var(--fs-2xl);
+  font-weight: 680;
+  letter-spacing: -0.025em;
 }
 @media (min-width: 900px) {
-  .page-title h1 {
+  .page-title h1,
+  .page-header > h1 {
     font-size: var(--fs-3xl);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
   }
 }
 .page-sub {
@@ -255,13 +319,15 @@
   gap: var(--s-3);
   margin-bottom: var(--s-4);
   padding: var(--s-3) var(--s-4);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: var(--r-md);
   background: var(--accent-soft);
   color: var(--accent-text);
   font-size: var(--fs-sm);
 }
 .install-hint {
-  background: var(--surface-2);
+  border-color: var(--border);
+  background: var(--surface);
   color: var(--text-2);
 }
 

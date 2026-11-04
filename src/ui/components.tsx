@@ -195,10 +195,10 @@ export function Progress({ value, label }: { value: number; label?: string }) {
   );
 }
 
-export function EmptyState({ icon, title, text, children }: { icon: ReactNode; title: string; text?: ReactNode; children?: ReactNode }) {
+export function EmptyState({ icon, title, text, children, brand }: { icon: ReactNode; title: string; text?: ReactNode; children?: ReactNode; brand?: boolean }) {
   return (
     <div className="empty">
-      <div className="empty-icon" aria-hidden>
+      <div className={`empty-icon ${brand ? 'is-logo' : ''}`} aria-hidden>
         {icon}
       </div>
       <h3>{title}</h3>

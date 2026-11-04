@@ -1,9 +1,10 @@
 /*
- * Design-Tokens von Grapnel.
+ * Design-Tokens von Grapnel, abgeleitet vom Logo (silberner G-Anker auf Royal Blue).
  *
- * Eine Akzentfarbe (Kobaltblau), kühle neutrale Grautöne, dazu nur semantische Farben
- * für richtig, falsch und Hinweis. Richtig/Falsch ist nie nur Farbe: immer mit Symbol
- * und Text.
+ * Dunkel ist das Markenbild: tiefes Navy, Royal Blue als einzige Akzentfarbe, Electric Blue
+ * nur für Licht (Fokus, aktive Markierung, Glanz), Silber für feine Kanten. Hell ist dieselbe
+ * Marke auf kühlem Weiss. Dazu nur semantische Farben für richtig, falsch und Hinweis.
+ * Richtig/Falsch ist nie nur Farbe: immer mit Symbol und Text.
  *
  * Rundungen wachsen mit der Grösse der Fläche (feste Regel, überall gleich):
  *   --r-sm  8px   Kleinteile (Badges, Tastenkürzel, Chips im Text)
@@ -14,63 +15,87 @@
  */
 
 :root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #080d18;
+  --bg-2: #0c1322;
+  --surface: #121b2c;
+  --surface-2: #19253a;
+  --surface-3: #22314b;
+  --field: #0d1524;
+  --border: #1d2a40;
+  --border-strong: #2a3b58;
+  --text: #f8fafc;
+  --text-2: #c3cddc;
+  --text-3: #94a3b8;
+  --accent: #2563eb;
+  --accent-hover: #3b74f2;
+  --accent-soft: rgb(37 99 235 / 0.16);
+  --accent-text: #7db3ff;
+  --on-accent: #f8fafc;
+  --electric: #00a6ff;
+  --deep: #123b8a;
+  --silver: #c9d3e3;
+  --success: #4cc38a;
+  --success-soft: rgb(76 195 138 / 0.14);
+  --danger: #f2766c;
+  --danger-soft: rgb(242 118 108 / 0.14);
+  --warning: #e9ae52;
+  --warning-soft: rgb(233 174 82 / 0.14);
+  --shadow-color: 222 70% 2%;
+  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.5);
+  --shadow-md: 0 8px 24px -6px hsl(var(--shadow-color) / 0.6), 0 1px 3px hsl(var(--shadow-color) / 0.5);
+  --shadow-lg: 0 28px 64px -12px hsl(var(--shadow-color) / 0.75), 0 3px 10px hsl(var(--shadow-color) / 0.5);
+  /* Feine Lichtkante oben auf Flächen: wirkt wie gebürstetes Metall, nicht wie Rand. */
+  --edge: inset 0 1px 0 rgb(248 250 252 / 0.05);
+  --glow: 0 10px 28px -10px rgb(37 99 235 / 0.65);
+  --focus: 0 0 0 3px rgb(0 166 255 / 0.42);
+  --scrim: rgb(4 7 14 / 0.66);
+  /* Royal Blue mit einem Hauch Tiefe für gefüllte Flächen (Primärknöpfe, Markenkarte). */
+  --grad-accent: linear-gradient(180deg, #3170f0 0%, #2563eb 50%, #1f55d6 100%);
+  --grad-brand: linear-gradient(135deg, #1a4fc4 0%, #123b8a 58%, #0e2c68 100%);
+  /* Raumlicht: zwei weiche Lichtquellen in Blau über dem Navy. */
+  --ambient: radial-gradient(1100px 620px at 78% -12%, rgb(37 99 235 / 0.16), transparent 62%), radial-gradient(760px 520px at -6% -8%, rgb(0 166 255 / 0.07), transparent 60%);
+}
+
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #f6f7f9;
-  --surface: #fdfdfe;
-  --surface-2: #eef0f4;
-  --surface-3: #e4e7ed;
-  --border: #e1e4ea;
-  --border-strong: #cdd2db;
-  --text: #14171c;
-  --text-2: #464d5b;
-  --text-3: #646b7a;
-  --accent: #2f5bd3;
-  --accent-hover: #2850c0;
-  --accent-soft: #e8eefc;
-  --accent-text: #2249b8;
-  --on-accent: #fbfcff;
+  --bg: #f3f6fb;
+  --bg-2: #eaf0f8;
+  --surface: #ffffff;
+  --surface-2: #eef3fa;
+  --surface-3: #e1e9f4;
+  --field: #ffffff;
+  --border: #dbe3ef;
+  --border-strong: #c3cfe0;
+  --text: #0b1324;
+  --text-2: #3a4962;
+  --text-3: #5b6a84;
+  --accent: #2563eb;
+  --accent-hover: #1d55d6;
+  --accent-soft: #e6eefd;
+  --accent-text: #1d4ed8;
+  --on-accent: #f8fafc;
+  --electric: #0090e0;
+  --deep: #123b8a;
+  --silver: #5b6a84;
   --success: #17794c;
   --success-soft: #e5f4ec;
   --danger: #c2352d;
   --danger-soft: #fbeceb;
   --warning: #9a5806;
   --warning-soft: #fdf2df;
-  --shadow-color: 220 30% 30%;
+  --shadow-color: 222 45% 25%;
   --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 1px 1px hsl(var(--shadow-color) / 0.04);
-  --shadow-md: 0 4px 14px hsl(var(--shadow-color) / 0.08), 0 1px 3px hsl(var(--shadow-color) / 0.06);
-  --shadow-lg: 0 18px 48px hsl(var(--shadow-color) / 0.14), 0 3px 10px hsl(var(--shadow-color) / 0.06);
-  --focus: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
-  --scrim: rgb(16 20 28 / 0.42);
-}
-
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #0f1115;
-  --surface: #161920;
-  --surface-2: #1c2029;
-  --surface-3: #242934;
-  --border: #262b35;
-  --border-strong: #353c49;
-  --text: #eceef2;
-  --text-2: #b1b7c3;
-  --text-3: #8d94a3;
-  --accent: #7c9bf5;
-  --accent-hover: #93aef8;
-  --accent-soft: rgb(124 155 245 / 0.14);
-  --accent-text: #9db4fa;
-  --on-accent: #0d1220;
-  --success: #4cc38a;
-  --success-soft: rgb(76 195 138 / 0.14);
-  --danger: #f07c71;
-  --danger-soft: rgb(240 124 113 / 0.14);
-  --warning: #e6aa4c;
-  --warning-soft: rgb(230 170 76 / 0.14);
-  --shadow-color: 225 40% 2%;
-  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.4);
-  --shadow-md: 0 6px 18px hsl(var(--shadow-color) / 0.45), 0 1px 3px hsl(var(--shadow-color) / 0.4);
-  --shadow-lg: 0 22px 56px hsl(var(--shadow-color) / 0.6), 0 3px 10px hsl(var(--shadow-color) / 0.4);
-  --scrim: rgb(3 5 9 / 0.62);
+  --shadow-md: 0 6px 18px -4px hsl(var(--shadow-color) / 0.12), 0 1px 3px hsl(var(--shadow-color) / 0.06);
+  --shadow-lg: 0 24px 56px -12px hsl(var(--shadow-color) / 0.22), 0 3px 10px hsl(var(--shadow-color) / 0.06);
+  --edge: inset 0 1px 0 rgb(255 255 255 / 0.6);
+  --glow: 0 10px 24px -10px rgb(37 99 235 / 0.55);
+  --focus: 0 0 0 3px rgb(37 99 235 / 0.32);
+  --scrim: rgb(11 19 36 / 0.42);
+  --grad-accent: linear-gradient(180deg, #2f6cf0 0%, #2563eb 55%, #1f57da 100%);
+  --grad-brand: linear-gradient(135deg, #2563eb 0%, #1a4fc4 55%, #123b8a 100%);
+  --ambient: radial-gradient(1100px 600px at 80% -14%, rgb(37 99 235 / 0.09), transparent 62%);
 }
 
 :root {
@@ -107,8 +132,8 @@
   --t-med: 220ms;
   --t-slow: 420ms;
 
-  --sidebar-w: 236px;
-  --tabbar-h: 60px;
+  --sidebar-w: 248px;
+  --tabbar-h: 62px;
   --content-max: 1080px;
 
   /* Ebenen (einzige Stelle mit z-index-Werten) */

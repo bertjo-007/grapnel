@@ -24,7 +24,20 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Raumlicht: weiche blaue Lichtquellen über dem Navy, fest hinter allem und ohne Neuzeichnen
+   beim Scrollen (eigene Ebene, keine Interaktion). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--ambient);
+  pointer-events: none;
+}
+
 #root {
+  position: relative;
+  z-index: 1;
   min-height: 100dvh;
   /* Seitliche Einblendungen dürfen die Seite nie breiter machen. */
   overflow-x: clip;
@@ -82,7 +95,7 @@ button {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--electric) 30%, transparent);
 }
 
 img {

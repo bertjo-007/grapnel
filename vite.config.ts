@@ -8,7 +8,7 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 /** Dateien aus public/, die der Service Worker zusätzlich vorhält (relativ zur Basis). */
 const PUBLIC_FILES = [
   'manifest.webmanifest',
-  'favicon.svg',
+  'favicon.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/maskable-512.png',

@@ -1,8 +1,9 @@
-import { AnchorSimple, ArrowsClockwise, Cards, ChartBar, CloudCheck, CloudSlash, GearSix, House } from '@phosphor-icons/react';
+import { ArrowsClockwise, Cards, ChartBar, CloudCheck, CloudSlash, GearSix, House } from '@phosphor-icons/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { db } from '../../core/db/db';
+import logoUrl from '../assets/grapnel-logo.webp';
 import { endOfDay } from '../../core/util/time';
 import { Dialog, Kbd } from '../components';
 import { useHotkeys } from '../hooks';
@@ -70,12 +71,9 @@ function SyncIndicator() {
   );
 }
 
-export function Logo() {
-  return (
-    <span className="logo" aria-hidden>
-      <AnchorSimple size={18} weight="bold" />
-    </span>
-  );
+/** Joshuas Grapnel-Logo (Kachel mit G-Anker); dekorativ, der Name steht daneben als Text. */
+export function Logo({ size = 34, className = '' }: { size?: number; className?: string }) {
+  return <img className={`logo ${className}`} src={logoUrl} width={size} height={size} alt="" aria-hidden="true" draggable={false} />;
 }
 
 function UpdateBanner() {
@@ -207,7 +205,7 @@ export function Shell() {
       <aside className="sidebar">
         <div className="brand">
           <Logo />
-          <span>{t('app.name')}</span>
+          <span className="wordmark">{t('app.name')}</span>
         </div>
         <nav className="side-nav" aria-label={t('nav.main')}>
           <NavItems />
@@ -216,6 +214,10 @@ export function Shell() {
         <SyncIndicator />
       </aside>
       <main className="main" id="main">
+        <div className="mobile-brand">
+          <Logo size={28} />
+          <span className="wordmark">{t('app.name')}</span>
+        </div>
         <UpdateBanner />
         <InstallHint />
         <Outlet />

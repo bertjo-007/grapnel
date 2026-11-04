@@ -1,38 +1,42 @@
 <!doctype html>
-<html lang="de-CH">
+<html lang="de-CH" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Grapnel</title>
     <meta name="description" content="Grapnel – deine Lernsets, Karteikarten und Wiederholungen an einem Ort" />
-    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#080d18" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Grapnel" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
-      // Design vor dem ersten Zeichnen setzen, damit es nicht hell aufblitzt.
-      // Die echte Einstellung liegt in IndexedDB; hier nur eine Kopie für den Start.
+      // Design vor dem ersten Zeichnen setzen, damit es nicht aufblitzt. Dunkel ist das
+      // Markenbild; die echte Einstellung liegt in IndexedDB, hier nur eine Kopie für den Start.
       (function () {
-        var theme = 'system';
-        try { theme = localStorage.getItem('grapnel.theme') || 'system'; } catch (e) {}
+        var theme = 'dark';
+        try { theme = localStorage.getItem('grapnel.theme') || 'dark'; } catch (e) {}
         var dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
       })();
     </script>
     <style>
-      html, body { background: #f6f7f9; }
-      html[data-theme='dark'], html[data-theme='dark'] body { background: #0f1115; }
+      html, body { background: #080d18; }
+      html[data-theme='light'], html[data-theme='light'] body { background: #f3f6fb; }
+      /* Ladebild bis die App steht: das Logo mit einem ruhigen Lichtpuls. */
+      .boot { min-height: 100dvh; display: grid; place-items: center; }
+      .boot img { width: 88px; height: 88px; border-radius: 22%; box-shadow: 0 18px 48px -14px rgb(37 99 235 / 0.7); animation: boot-pulse 1.6s ease-in-out infinite alternate; }
+      @keyframes boot-pulse { from { opacity: 0.82; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+      @media (prefers-reduced-motion: reduce) { .boot img { animation: none; } }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot" aria-label="Grapnel wird geladen"><img src="/src/ui/assets/grapnel-logo.webp" alt="" width="88" height="88" /></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

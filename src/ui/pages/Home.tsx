@@ -1,4 +1,4 @@
-import { ArrowRight, Brain, FileArrowUp, Fire, Plus, Sparkle } from '@phosphor-icons/react';
+import { ArrowRight, Brain, FileArrowUp, Fire, Plus } from '@phosphor-icons/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -10,6 +10,7 @@ import { EmptyState, LoadingBlock, Progress } from '../components';
 import { useSets } from '../hooks';
 import { useI18n, type Key } from '../i18n';
 import { useSettings } from '../state';
+import { Logo } from '../shell/Shell';
 import { EMPTY_STATS, SetTile, useSetSummaries } from '../widgets';
 
 function greetingKey(hour: number): 'morning' | 'day' | 'evening' {
@@ -51,7 +52,7 @@ export function Home() {
         <header className="page-header">
           <h1>{greeting}</h1>
         </header>
-        <EmptyState icon={<Sparkle size={22} />} title={t('home.empty.title')} text={t('home.empty.text')}>
+        <EmptyState brand icon={<Logo size={64} />} title={t('home.empty.title')} text={t('home.empty.text')}>
           <Link to="/import" className="btn btn-primary">
             <FileArrowUp size={18} />
             {t('home.import')}

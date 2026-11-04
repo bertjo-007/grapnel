@@ -39,13 +39,24 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     root.setAttribute('data-theme', dark ? 'dark' : 'light');
     root.setAttribute('data-motion', settings.reduceMotion || prefersReducedMotion() ? 'reduced' : 'full');
     root.lang = settings.uiLang === 'de' ? 'de-CH' : 'en';
-    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', dark ? '#0f1115' : '#f6f7f9'));
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', dark ? '#080d18' : '#f3f6fb'));
     try {
       localStorage.setItem('grapnel.theme', settings.theme);
     } catch {
       // Ohne localStorage blitzt höchstens das Design beim Start kurz auf.
     }
   }, [loaded, settings.theme, settings.reduceMotion, settings.uiLang, systemDark]);
+
+  // Einmalig mit dem Grapnel-Redesign: Dunkel ist das Markenbild. Wer noch auf «System» stand
+  // (die frühere Voreinstellung), kommt auf Dunkel; Hell bleibt in den Einstellungen wählbar.
+  useEffect(() => {
+    if (!loaded) return;
+    void (async () => {
+      if (await db.meta.get('brandDarkDefault')) return;
+      await db.meta.put({ key: 'brandDarkDefault', value: Date.now() });
+      if (settings.theme === 'system') await saveSettings({ theme: 'dark' });
+    })();
+  }, [loaded, settings.theme]);
 
   const update = useCallback(async (patch: Partial<Settings>) => {
     await saveSettings(patch);
